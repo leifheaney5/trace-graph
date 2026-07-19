@@ -1,0 +1,5 @@
+# Baseline management
+
+Baselines freeze artifacts, relationships, and the current artifact-version history. The working-copy view compares added, removed, and changed artifacts plus relationship, verification, risk, and allocation deltas. A baseline can be restored into the working copy through an audited transaction, and imported/exported project bundles retain optional version history.
+
+The UI distinguishes the working copy from frozen local snapshots. Creating a baseline deep-copies the selected artifact types, relationships, matching artifact-version history, and relationship-history ledger into the canonical project bundle, records an approver, and provides a JSON export of that snapshot. Full project JSON exports and imports retain these baselines; older local-storage projects continue to receive seeded snapshots when no baselines have been saved. A comparison panel reports artifact and relationship deltas between any two frozen baselines; restore remains an audited working-copy transaction.

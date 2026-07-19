@@ -1,0 +1,3 @@
+# Roadmap
+
+The current slice includes validated JSON import with a review/undo path, IndexedDB-backed local persistence with fallback, deterministic SVG/PNG export, CSV/Markdown/HTML reports, relationship creation, a Diagram Studio perspective, explainable trace traversal and impact preview, named/scoped/approved baseline snapshots with cross-baseline comparison, artifact version history, a repository boundary, bounded local audit history, persisted themes, and observed session timing instrumentation. Next priorities are import conflict resolution, diagram versioning, standards-complete SysML/UML/SoSE semantics, richer impact simulation, and server-backed collaboration.

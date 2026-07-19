@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">TraceGraph requirements engineering workbench</title>
+  <desc id="desc">A connected digital thread from stakeholder intent to verified evidence.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#080d21"/>
+      <stop offset="1" stop-color="#111d40"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <circle cx="1030" cy="-20" r="300" fill="#635fec" opacity=".16"/>
+  <circle cx="1120" cy="650" r="280" fill="#0eb4ec" opacity=".12"/>
+  <g transform="translate(105 155)">
+    <path d="M25 27 108 110 191 27M25 193 108 110 191 193" fill="none" stroke="#3892ed" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="25" cy="27" r="20" fill="#635fec"/>
+    <circle cx="191" cy="27" r="20" fill="#0eb4ec"/>
+    <circle cx="108" cy="110" r="23" fill="#fff"/>
+    <circle cx="25" cy="193" r="20" fill="#0eb4ec"/>
+    <circle cx="191" cy="193" r="20" fill="#635fec"/>
+  </g>
+  <text x="370" y="270" fill="#fff" font-family="Inter,Segoe UI,sans-serif" font-size="84" font-weight="700">Trace<tspan fill="#6fcbff">Graph</tspan></text>
+  <text x="375" y="350" fill="#b8c7e8" font-family="Inter,Segoe UI,sans-serif" font-size="30">Requirements engineering · MBSE · digital thread</text>
+  <text x="375" y="414" fill="#7dc8ff" font-family="Inter,Segoe UI,sans-serif" font-size="24">From stakeholder intent to verified evidence.</text>
+</svg>

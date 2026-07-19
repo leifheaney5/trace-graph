@@ -1,0 +1,20 @@
+html {
+  background: #080d21;
+}
+html[data-theme="light"] {
+  background: #f5f7fc;
+  color-scheme: light;
+}
+body {
+  margin: 0;
+}
+#root {
+  min-height: 100vh;
+}
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid #66c6ff;
+  outline-offset: 2px;
+}

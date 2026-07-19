@@ -1,0 +1,3 @@
+# Brand system
+
+The intended palette is midnight navy with violet, blue, and cyan accents: #01041a, #635fec, #3892ed, and #0eb4ec. The current repository has no supplied logo asset, so the interface and metadata use the existing graph mark plus the deterministic fallback files in `public/brand/`. Replace those fallbacks with the owner-provided source asset before public launch; they are not presented as the final logo. Statuses also use text labels and symbols rather than color alone. Dark mode is the default; light mode is persisted for long-form editing, and print output forces a white background.

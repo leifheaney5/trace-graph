@@ -1,0 +1,3 @@
+# Architecture
+
+TraceGraph starts as a modular monolith with a canonical model and view separation. Artifacts and relationships are the source of truth; requirements, graph, Diagram Studio, architecture, verification, impact, and baseline views consume the same identifiers. Browser persistence is behind `ProjectRepository`; the current adapter writes a versioned project bundle and bounded audit history to IndexedDB, with localStorage migration/fallback, leaving server persistence available without changing view semantics. The global artifact search is debounced by 150 ms and rendered result sets remain bounded so large synthetic projects do not trigger a full synchronous rerender on every keystroke.

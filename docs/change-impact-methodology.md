@@ -1,0 +1,3 @@
+# Change impact methodology
+
+Impact analysis follows relationship paths outward from a changed artifact, classifying direct, indirect, and system-of-systems cascade paths. Each result retains the canonical ID path, hop count, and artifact classification. The preview also reports verification gaps, allocation links, affected-subgraph relationship counts, and quality findings on the proposed statement before persistence. Users can export the affected subgraph as Mermaid, create an auditable ChangeRequest, and apply the proposed statement; baseline comparison remains available for reviewing the resulting working copy.
