@@ -1,7 +1,7 @@
 .case-study-chrome {
   position: sticky;
   top: 0;
-  z-index: 50;
+  z-index: 10;
   width: 100%;
   border-bottom: 1px solid #2f3b5f;
   background: color-mix(in srgb, #080d21 94%, transparent);
