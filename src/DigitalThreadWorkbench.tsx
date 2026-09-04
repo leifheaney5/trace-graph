@@ -75,6 +75,13 @@ export default function DigitalThreadWorkbench() {
       bundle.artifacts.filter((artifact) => artifact.type === "Requirement"),
     [bundle.artifacts],
   );
+  const lifecycleArtifacts = useMemo(
+    () =>
+      bundle.artifacts.filter((artifact) =>
+        ["Requirement", "ChangeRequest"].includes(artifact.type),
+      ),
+    [bundle.artifacts],
+  );
   const evidence = useMemo(
     () =>
       bundle.artifacts.filter(
@@ -189,8 +196,8 @@ export default function DigitalThreadWorkbench() {
     requirements.find((artifact) => artifact.id === qualityId) ||
     requirements[0];
   const selectedLifecycleArtifact =
-    requirements.find((artifact) => artifact.id === lifecycleId) ||
-    requirements[0];
+    lifecycleArtifacts.find((artifact) => artifact.id === lifecycleId) ||
+    lifecycleArtifacts[0];
   const selectedQualityFindings = selectedQualityArtifact
     ? requirementQualityReport(selectedQualityArtifact)
     : [];
@@ -299,7 +306,7 @@ export default function DigitalThreadWorkbench() {
           setOpen(true);
         }}
       >
-        Engineering intelligence
+        Thread intelligence
       </button>
     );
   }
@@ -350,7 +357,11 @@ export default function DigitalThreadWorkbench() {
           ))}
         </nav>
 
-        <main className="dt-content">
+        <main
+          className="dt-content"
+          tabIndex={0}
+          aria-label="Engineering intelligence content"
+        >
           {tab === "overview" && (
             <section aria-labelledby="dt-overview-title">
               <div className="dt-section-heading">
@@ -644,7 +655,12 @@ export default function DigitalThreadWorkbench() {
                   </article>
                 ))}
               </div>
-              <div className="dt-table-wrap">
+              <div
+                className="dt-table-wrap"
+                tabIndex={0}
+                role="region"
+                aria-label="Evidence validity table"
+              >
                 <table className="dt-table">
                   <thead>
                     <tr>
@@ -874,12 +890,12 @@ export default function DigitalThreadWorkbench() {
                 <article>
                   <h4>Artifact lifecycle</h4>
                   <label>
-                    Requirement
+                    Requirement or change request
                     <select
                       value={lifecycleId}
                       onChange={(event) => setLifecycleId(event.target.value)}
                     >
-                      {requirements.map((artifact) => (
+                      {lifecycleArtifacts.map((artifact) => (
                         <option key={artifact.id} value={artifact.id}>
                           {artifactLabel(artifact)}
                         </option>
