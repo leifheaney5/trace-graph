@@ -47,8 +47,18 @@ test("case-study workflow surfaces remain free of critical and serious accessibi
   await expect(intelligence).toBeVisible();
   await expectNoHighImpactViolations(page, "engineering intelligence overview");
 
-  for (const section of ["Impact", "Trace queries", "Evidence validity", "Elicitation"]) {
-    await intelligence.getByRole("button", { name: section, exact: true }).click();
-    await expectNoHighImpactViolations(page, `engineering intelligence ${section}`);
+  for (const section of [
+    "Impact",
+    "Trace queries",
+    "Evidence validity",
+    "Elicitation",
+  ]) {
+    await intelligence
+      .getByRole("button", { name: section, exact: true })
+      .click();
+    await expectNoHighImpactViolations(
+      page,
+      `engineering intelligence ${section}`,
+    );
   }
 });

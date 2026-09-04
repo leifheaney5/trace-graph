@@ -71,7 +71,8 @@ export default function DigitalThreadWorkbench() {
   const closeRef = useRef<HTMLButtonElement>(null);
 
   const requirements = useMemo(
-    () => bundle.artifacts.filter((artifact) => artifact.type === "Requirement"),
+    () =>
+      bundle.artifacts.filter((artifact) => artifact.type === "Requirement"),
     [bundle.artifacts],
   );
   const evidence = useMemo(
@@ -95,23 +96,30 @@ export default function DigitalThreadWorkbench() {
   const [reviewRationale, setReviewRationale] = useState(
     "Reviewed against the current mission need, allocation, and verification intent.",
   );
-  const [changeTitle, setChangeTitle] = useState("Telemetry requirement update");
+  const [changeTitle, setChangeTitle] = useState(
+    "Telemetry requirement update",
+  );
   const [changeReason, setChangeReason] = useState(
     "Mission feedback requires a review of telemetry timing and downstream evidence.",
   );
   const [changeProposal, setChangeProposal] = useState(
     "Review REQ-042 timing, affected architecture allocations, verification cases, and evidence before the next baseline.",
   );
-  const [baselineName, setBaselineName] = useState("Engineering Review Baseline");
+  const [baselineName, setBaselineName] = useState(
+    "Engineering Review Baseline",
+  );
 
   useEffect(() => {
     const handleOpen = () => {
       setBundle(repository.load());
       setOpen(true);
-      setNotice("Canonical local repository refreshed from the core workbench.");
+      setNotice(
+        "Canonical local repository refreshed from the core workbench.",
+      );
     };
     window.addEventListener("tracegraph:open-intelligence", handleOpen);
-    return () => window.removeEventListener("tracegraph:open-intelligence", handleOpen);
+    return () =>
+      window.removeEventListener("tracegraph:open-intelligence", handleOpen);
   }, []);
 
   useEffect(() => {
@@ -178,9 +186,11 @@ export default function DigitalThreadWorkbench() {
   const suggestions = useMemo(() => assistantSuggestions(bundle), [bundle]);
 
   const selectedQualityArtifact =
-    requirements.find((artifact) => artifact.id === qualityId) || requirements[0];
+    requirements.find((artifact) => artifact.id === qualityId) ||
+    requirements[0];
   const selectedLifecycleArtifact =
-    requirements.find((artifact) => artifact.id === lifecycleId) || requirements[0];
+    requirements.find((artifact) => artifact.id === lifecycleId) ||
+    requirements[0];
   const selectedQualityFindings = selectedQualityArtifact
     ? requirementQualityReport(selectedQualityArtifact)
     : [];
@@ -208,7 +218,9 @@ export default function DigitalThreadWorkbench() {
       next,
       `${candidate.id} accepted into the canonical project. Core views will refresh when this workbench closes.`,
     );
-    setCandidates((current) => current.filter((item) => item.id !== candidate.id));
+    setCandidates((current) =>
+      current.filter((item) => item.id !== candidate.id),
+    );
   };
 
   const applyLifecycle = (nextState: LifecycleState) => {
@@ -226,7 +238,9 @@ export default function DigitalThreadWorkbench() {
         `${selectedLifecycleArtifact.id} moved to ${nextState}; a canonical version snapshot was recorded.`,
       );
     } catch (error) {
-      setNotice(error instanceof Error ? error.message : "Lifecycle transition failed.");
+      setNotice(
+        error instanceof Error ? error.message : "Lifecycle transition failed.",
+      );
     }
   };
 
@@ -269,7 +283,10 @@ export default function DigitalThreadWorkbench() {
       name: `${baselineName} ${(bundle.baselines || []).length + 1}`,
       approvedBy: reviewer,
     });
-    save(next, "Version-aware baseline snapshot created from the canonical bundle.");
+    save(
+      next,
+      "Version-aware baseline snapshot created from the canonical bundle.",
+    );
   };
 
   if (!open) {
@@ -297,11 +314,13 @@ export default function DigitalThreadWorkbench() {
       >
         <header className="dt-header">
           <div>
-            <span className="dt-kicker">TRACEGRAPH · INSPECTABLE DIGITAL THREAD</span>
+            <span className="dt-kicker">
+              TRACEGRAPH · INSPECTABLE DIGITAL THREAD
+            </span>
             <h2 id="dt-title">Engineering intelligence workbench</h2>
             <p>
-              Deterministic analysis over the canonical local project. Suggestions remain
-              non-canonical until explicitly accepted.
+              Deterministic analysis over the canonical local project.
+              Suggestions remain non-canonical until explicitly accepted.
             </p>
           </div>
           <div className="dt-header__controls">
@@ -340,8 +359,9 @@ export default function DigitalThreadWorkbench() {
                   <h3 id="dt-overview-title">Inspectable engineering state</h3>
                 </div>
                 <p>
-                  Counts stay separate. No opaque readiness score collapses lifecycle,
-                  verification, evidence validity, or quality into one number.
+                  Counts stay separate. No opaque readiness score collapses
+                  lifecycle, verification, evidence validity, or quality into
+                  one number.
                 </p>
               </div>
               <div className="dt-metrics">
@@ -351,8 +371,8 @@ export default function DigitalThreadWorkbench() {
                     {approvedRequirements}/{requirements.length}
                   </strong>
                   <small>
-                    {metricPercent(approvedRequirements, requirements.length)}% · normalized
-                    lifecycle state
+                    {metricPercent(approvedRequirements, requirements.length)}%
+                    · normalized lifecycle state
                   </small>
                 </article>
                 <article>
@@ -360,7 +380,9 @@ export default function DigitalThreadWorkbench() {
                   <strong>
                     {verifiedRequirements}/{requirements.length}
                   </strong>
-                  <small>Requirements with an outgoing verified-by relationship</small>
+                  <small>
+                    Requirements with an outgoing verified-by relationship
+                  </small>
                 </article>
                 <article>
                   <span>Valid evidence</span>
@@ -378,25 +400,30 @@ export default function DigitalThreadWorkbench() {
                 </article>
                 <article>
                   <span>Open quality findings</span>
-                  <strong>{qualityFindingsCount + corpusFindings.length}</strong>
+                  <strong>
+                    {qualityFindingsCount + corpusFindings.length}
+                  </strong>
                   <small>
-                    {qualityFindingsCount} artifact rules · {corpusFindings.length} corpus
-                    rules
+                    {qualityFindingsCount} artifact rules ·{" "}
+                    {corpusFindings.length} corpus rules
                   </small>
                 </article>
                 <article>
                   <span>Assistant suggestions</span>
                   <strong>{suggestions.length}</strong>
-                  <small>Proposal layer only; zero are canonical automatically</small>
+                  <small>
+                    Proposal layer only; zero are canonical automatically
+                  </small>
                 </article>
               </div>
 
               <div className="dt-callout">
                 <strong>Product boundary</strong>
                 <p>
-                  TraceGraph is an inspectable requirements and digital-thread workbench.
-                  SysML/UML/SoSE views remain practical projections, not standards
-                  certification. The synthetic sample is not customer evidence.
+                  TraceGraph is an inspectable requirements and digital-thread
+                  workbench. SysML/UML/SoSE views remain practical projections,
+                  not standards certification. The synthetic sample is not
+                  customer evidence.
                 </p>
               </div>
             </section>
@@ -407,7 +434,9 @@ export default function DigitalThreadWorkbench() {
               <div className="dt-section-heading">
                 <div>
                   <span className="dt-kicker">EXPLAINABLE CHANGE IMPACT</span>
-                  <h3 id="dt-impact-title">Follow the reason for every consequence</h3>
+                  <h3 id="dt-impact-title">
+                    Follow the reason for every consequence
+                  </h3>
                 </div>
                 <label>
                   Root artifact
@@ -417,9 +446,12 @@ export default function DigitalThreadWorkbench() {
                   >
                     {bundle.artifacts
                       .filter((artifact) =>
-                        ["Requirement", "Need", "Block", "ChangeRequest"].includes(
-                          artifact.type,
-                        ),
+                        [
+                          "Requirement",
+                          "Need",
+                          "Block",
+                          "ChangeRequest",
+                        ].includes(artifact.type),
                       )
                       .slice(0, 400)
                       .map((artifact) => (
@@ -451,12 +483,16 @@ export default function DigitalThreadWorkbench() {
                     <article>
                       <span>Evidence at risk</span>
                       <strong>{impact.totals.evidence}</strong>
-                      <small>Connected evidence requiring review after the change</small>
+                      <small>
+                        Connected evidence requiring review after the change
+                      </small>
                     </article>
                     <article>
                       <span>Baseline divergence</span>
                       <strong>{impact.totals["baseline-divergence"]}</strong>
-                      <small>Current artifacts differ from latest stored snapshot</small>
+                      <small>
+                        Current artifacts differ from latest stored snapshot
+                      </small>
                     </article>
                   </div>
                   <div className="dt-impact-list">
@@ -465,7 +501,9 @@ export default function DigitalThreadWorkbench() {
                         <div className="dt-card-heading">
                           <div>
                             <strong>{artifactLabel(entry.artifact)}</strong>
-                            <span>{entry.hops} hop{entry.hops === 1 ? "" : "s"}</span>
+                            <span>
+                              {entry.hops} hop{entry.hops === 1 ? "" : "s"}
+                            </span>
                           </div>
                           <div className="dt-signal-list">
                             {entry.signals.map((signal) => (
@@ -480,8 +518,8 @@ export default function DigitalThreadWorkbench() {
                               <span>—{edge.kind}→</span>
                               <code>{edge.to}</code>
                               <small>
-                                {edge.rationale} · confidence: {edge.confidence} · source:{" "}
-                                {edge.provenance}
+                                {edge.rationale} · confidence: {edge.confidence}{" "}
+                                · source: {edge.provenance}
                               </small>
                             </li>
                           ))}
@@ -504,10 +542,15 @@ export default function DigitalThreadWorkbench() {
               <div className="dt-section-heading">
                 <div>
                   <span className="dt-kicker">DETERMINISTIC TRACE QUERY</span>
-                  <h3 id="dt-query-title">Ask structural questions without inventing an answer</h3>
+                  <h3 id="dt-query-title">
+                    Ask structural questions without inventing an answer
+                  </h3>
                 </div>
               </div>
-              <div className="dt-query-presets" aria-label="Trace query examples">
+              <div
+                className="dt-query-presets"
+                aria-label="Trace query examples"
+              >
                 {TRACE_QUERY_EXAMPLES.map((example) => (
                   <button
                     type="button"
@@ -534,7 +577,9 @@ export default function DigitalThreadWorkbench() {
               </div>
               {queryResult && (
                 <article className="dt-query-result">
-                  <span className={statusClass(queryResult.kind)}>{queryResult.kind}</span>
+                  <span className={statusClass(queryResult.kind)}>
+                    {queryResult.kind}
+                  </span>
                   <h4>{queryResult.summary}</h4>
                   <p>{queryResult.definition}</p>
                   {queryResult.artifactIds.length > 0 && (
@@ -571,23 +616,33 @@ export default function DigitalThreadWorkbench() {
                   <h3 id="dt-evidence-title">Existence is not validity</h3>
                 </div>
                 <p>
-                  Evidence is checked against producing tests, linked requirements,
-                  canonical version history, baseline references, review state, and
-                  supersession metadata.
+                  Evidence is checked against producing tests, linked
+                  requirements, canonical version history, baseline references,
+                  review state, and supersession metadata.
                 </p>
               </div>
               <div className="dt-metrics">
-                {(["valid", "stale", "review-needed", "incomplete", "superseded"] as const).map(
-                  (status) => (
-                    <article key={status}>
-                      <span>{status}</span>
-                      <strong>
-                        {evidenceRows.filter((item) => item.validity.status === status).length}
-                      </strong>
-                      <small>of {evidenceRows.length} evidence records</small>
-                    </article>
-                  ),
-                )}
+                {(
+                  [
+                    "valid",
+                    "stale",
+                    "review-needed",
+                    "incomplete",
+                    "superseded",
+                  ] as const
+                ).map((status) => (
+                  <article key={status}>
+                    <span>{status}</span>
+                    <strong>
+                      {
+                        evidenceRows.filter(
+                          (item) => item.validity.status === status,
+                        ).length
+                      }
+                    </strong>
+                    <small>of {evidenceRows.length} evidence records</small>
+                  </article>
+                ))}
               </div>
               <div className="dt-table-wrap">
                 <table className="dt-table">
@@ -615,7 +670,8 @@ export default function DigitalThreadWorkbench() {
                         <td>
                           <small>
                             req: {validity.requirementIds.join(", ") || "—"}
-                            <br />test: {validity.testIds.join(", ") || "—"}
+                            <br />
+                            test: {validity.testIds.join(", ") || "—"}
                           </small>
                         </td>
                         <td>{validity.baselineReference || "—"}</td>
@@ -633,17 +689,23 @@ export default function DigitalThreadWorkbench() {
               <div className="dt-section-heading">
                 <div>
                   <span className="dt-kicker">PROGRESSIVE FORMALIZATION</span>
-                  <h3 id="dt-elicitation-title">Turn source language into reviewable candidates</h3>
+                  <h3 id="dt-elicitation-title">
+                    Turn source language into reviewable candidates
+                  </h3>
                 </div>
                 <p>
-                  Extraction is deterministic and local. Candidate artifacts are visibly
-                  suggestions and are not written to the canonical model until accepted.
+                  Extraction is deterministic and local. Candidate artifacts are
+                  visibly suggestions and are not written to the canonical model
+                  until accepted.
                 </p>
               </div>
               <div className="dt-form-grid">
                 <label>
                   Source artifact ID
-                  <input value={sourceId} onChange={(event) => setSourceId(event.target.value)} />
+                  <input
+                    value={sourceId}
+                    onChange={(event) => setSourceId(event.target.value)}
+                  />
                 </label>
                 <label className="dt-form-grid__wide">
                   Meeting note / interview / source excerpt
@@ -656,7 +718,9 @@ export default function DigitalThreadWorkbench() {
                 <button
                   type="button"
                   onClick={() =>
-                    setCandidates(extractElicitationCandidates(elicitationText, sourceId))
+                    setCandidates(
+                      extractElicitationCandidates(elicitationText, sourceId),
+                    )
                   }
                 >
                   Extract candidate engineering records
@@ -667,14 +731,19 @@ export default function DigitalThreadWorkbench() {
                   <article key={candidate.id}>
                     <div className="dt-card-heading">
                       <div>
-                        <span className="dt-suggestion-label">SUGGESTED · NOT CANONICAL</span>
+                        <span className="dt-suggestion-label">
+                          SUGGESTED · NOT CANONICAL
+                        </span>
                         <strong>{candidate.artifact.type}</strong>
                       </div>
                       <span>{candidate.confidence} confidence</span>
                     </div>
                     <blockquote>{candidate.sourceExcerpt}</blockquote>
                     <p>{candidate.rationale}</p>
-                    <button type="button" onClick={() => acceptCandidate(candidate)}>
+                    <button
+                      type="button"
+                      onClick={() => acceptCandidate(candidate)}
+                    >
                       Accept into canonical thread
                     </button>
                   </article>
@@ -688,11 +757,16 @@ export default function DigitalThreadWorkbench() {
               <div className="dt-section-heading">
                 <div>
                   <span className="dt-kicker">REQUIREMENT QUALITY</span>
-                  <h3 id="dt-quality-title">Show why a rule fired and how to repair it</h3>
+                  <h3 id="dt-quality-title">
+                    Show why a rule fired and how to repair it
+                  </h3>
                 </div>
                 <label>
                   Requirement
-                  <select value={qualityId} onChange={(event) => setQualityId(event.target.value)}>
+                  <select
+                    value={qualityId}
+                    onChange={(event) => setQualityId(event.target.value)}
+                  >
                     {requirements.map((artifact) => (
                       <option key={artifact.id} value={artifact.id}>
                         {artifactLabel(artifact)}
@@ -715,12 +789,18 @@ export default function DigitalThreadWorkbench() {
                     </div>
                     <div>
                       <dt>Review</dt>
-                      <dd>{selectedQualityArtifact.reviewStatus || "Not recorded"}</dd>
+                      <dd>
+                        {selectedQualityArtifact.reviewStatus || "Not recorded"}
+                      </dd>
                     </div>
                     <div>
                       <dt>Canonical history</dt>
                       <dd>
-                        v{latestArtifactVersion(bundle, selectedQualityArtifact.id)?.version || 0}
+                        v
+                        {latestArtifactVersion(
+                          bundle,
+                          selectedQualityArtifact.id,
+                        )?.version || 0}
                       </dd>
                     </div>
                     <div>
@@ -735,7 +815,9 @@ export default function DigitalThreadWorkbench() {
                   <article key={finding.id}>
                     <div className="dt-card-heading">
                       <strong>{finding.rule}</strong>
-                      <span className={statusClass(finding.severity)}>{finding.severity}</span>
+                      <span className={statusClass(finding.severity)}>
+                        {finding.severity}
+                      </span>
                     </div>
                     <p>{finding.message}</p>
                     <small>Triggered by: {finding.triggeringText}</small>
@@ -758,7 +840,9 @@ export default function DigitalThreadWorkbench() {
                   <article key={finding.id}>
                     <div className="dt-card-heading">
                       <strong>{finding.rule}</strong>
-                      <span className={statusClass(finding.severity)}>{finding.severity}</span>
+                      <span className={statusClass(finding.severity)}>
+                        {finding.severity}
+                      </span>
                     </div>
                     <p>{finding.message}</p>
                     <small>{finding.artifactIds.join(", ")}</small>
@@ -775,11 +859,14 @@ export default function DigitalThreadWorkbench() {
               <div className="dt-section-heading">
                 <div>
                   <span className="dt-kicker">CONTROLLED CHANGE</span>
-                  <h3 id="dt-change-title">Lifecycle, reviews, change requests, baselines</h3>
+                  <h3 id="dt-change-title">
+                    Lifecycle, reviews, change requests, baselines
+                  </h3>
                 </div>
                 <p>
-                  Review disposition is deliberately separate from lifecycle state. Baselines
-                  snapshot canonical artifacts, relationships, and version history.
+                  Review disposition is deliberately separate from lifecycle
+                  state. Baselines snapshot canonical artifacts, relationships,
+                  and version history.
                 </p>
               </div>
 
@@ -801,31 +888,53 @@ export default function DigitalThreadWorkbench() {
                   </label>
                   {selectedLifecycleArtifact && (
                     <p>
-                      Current: <strong>{lifecycleState(selectedLifecycleArtifact)}</strong> ·
-                      review: {selectedLifecycleArtifact.reviewStatus || "not recorded"} ·
-                      canonical history v
-                      {latestArtifactVersion(bundle, selectedLifecycleArtifact.id)?.version || 0}
+                      Current:{" "}
+                      <strong>
+                        {lifecycleState(selectedLifecycleArtifact)}
+                      </strong>{" "}
+                      · review:{" "}
+                      {selectedLifecycleArtifact.reviewStatus || "not recorded"}{" "}
+                      · canonical history v
+                      {latestArtifactVersion(
+                        bundle,
+                        selectedLifecycleArtifact.id,
+                      )?.version || 0}
                     </p>
                   )}
                   <div className="dt-button-row">
-                    {(["Proposed", "In review", "Approved", "Superseded", "Retired"] as const).map(
-                      (state) => (
-                        <button key={state} type="button" onClick={() => applyLifecycle(state)}>
-                          Move to {state}
-                        </button>
-                      ),
-                    )}
+                    {(
+                      [
+                        "Proposed",
+                        "In review",
+                        "Approved",
+                        "Superseded",
+                        "Retired",
+                      ] as const
+                    ).map((state) => (
+                      <button
+                        key={state}
+                        type="button"
+                        onClick={() => applyLifecycle(state)}
+                      >
+                        Move to {state}
+                      </button>
+                    ))}
                   </div>
                   <label>
                     Reviewer
-                    <input value={reviewer} onChange={(event) => setReviewer(event.target.value)} />
+                    <input
+                      value={reviewer}
+                      onChange={(event) => setReviewer(event.target.value)}
+                    />
                   </label>
                   <label>
                     Review rationale
                     <textarea
                       rows={4}
                       value={reviewRationale}
-                      onChange={(event) => setReviewRationale(event.target.value)}
+                      onChange={(event) =>
+                        setReviewRationale(event.target.value)
+                      }
                     />
                   </label>
                   <button type="button" onClick={recordReview}>
@@ -855,7 +964,9 @@ export default function DigitalThreadWorkbench() {
                     <textarea
                       rows={4}
                       value={changeProposal}
-                      onChange={(event) => setChangeProposal(event.target.value)}
+                      onChange={(event) =>
+                        setChangeProposal(event.target.value)
+                      }
                     />
                   </label>
                   <button type="button" onClick={addChangeRequest}>
@@ -864,7 +975,11 @@ export default function DigitalThreadWorkbench() {
                   <p>
                     Existing change requests:{" "}
                     <strong>
-                      {bundle.artifacts.filter((artifact) => artifact.type === "ChangeRequest").length}
+                      {
+                        bundle.artifacts.filter(
+                          (artifact) => artifact.type === "ChangeRequest",
+                        ).length
+                      }
                     </strong>
                   </p>
                 </article>
@@ -882,23 +997,27 @@ export default function DigitalThreadWorkbench() {
                     Snapshot canonical project
                   </button>
                   <p>
-                    Stored baselines: <strong>{(bundle.baselines || []).length}</strong>
+                    Stored baselines:{" "}
+                    <strong>{(bundle.baselines || []).length}</strong>
                   </p>
                   {latestBaseline && (
                     <>
                       <p>
-                        Latest: <strong>{latestBaseline.name}</strong> · approved by{" "}
-                        {latestBaseline.approvedBy}
+                        Latest: <strong>{latestBaseline.name}</strong> ·
+                        approved by {latestBaseline.approvedBy}
                       </p>
                       <p>
-                        Membership: {baselineMembership(latestBaseline).length} artifacts ·{" "}
-                        {latestBaseline.relations.length} relationships
+                        Membership: {baselineMembership(latestBaseline).length}{" "}
+                        artifacts · {latestBaseline.relations.length}{" "}
+                        relationships
                       </p>
                       {baselineDiff && (
                         <p>
-                          Current divergence: {baselineDiff.addedArtifacts.length} added, {" "}
-                          {baselineDiff.removedArtifacts.length} removed, {" "}
-                          {baselineDiff.changedArtifacts.length} changed artifacts.
+                          Current divergence:{" "}
+                          {baselineDiff.addedArtifacts.length} added,{" "}
+                          {baselineDiff.removedArtifacts.length} removed,{" "}
+                          {baselineDiff.changedArtifacts.length} changed
+                          artifacts.
                         </p>
                       )}
                     </>
@@ -913,19 +1032,22 @@ export default function DigitalThreadWorkbench() {
               <div className="dt-section-heading">
                 <div>
                   <span className="dt-kicker">ASSISTIVE LAYER</span>
-                  <h3 id="dt-assistant-title">Suggestions assist the thread; they never become the thread</h3>
+                  <h3 id="dt-assistant-title">
+                    Suggestions assist the thread; they never become the thread
+                  </h3>
                 </div>
                 <p>
-                  This build uses deterministic local suggestions. A future model provider can
-                  propose the same typed suggestions, but acceptance must remain explicit.
+                  This build uses deterministic local suggestions. A future
+                  model provider can propose the same typed suggestions, but
+                  acceptance must remain explicit.
                 </p>
               </div>
               <div className="dt-callout dt-callout--warning">
                 <strong>SUGGESTION BOUNDARY</strong>
                 <p>
-                  None of the items below modify canonical artifacts automatically. They are
-                  review prompts with rationale and limitations, not authoritative engineering
-                  decisions.
+                  None of the items below modify canonical artifacts
+                  automatically. They are review prompts with rationale and
+                  limitations, not authoritative engineering decisions.
                 </p>
               </div>
               <div className="dt-suggestion-list">
@@ -933,7 +1055,9 @@ export default function DigitalThreadWorkbench() {
                   <article key={suggestion.id}>
                     <div className="dt-card-heading">
                       <div>
-                        <span className="dt-suggestion-label">SUGGESTED · NOT CANONICAL</span>
+                        <span className="dt-suggestion-label">
+                          SUGGESTED · NOT CANONICAL
+                        </span>
                         <strong>{suggestion.title}</strong>
                       </div>
                       <code>{suggestion.artifactId}</code>

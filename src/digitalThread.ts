@@ -1,8 +1,4 @@
-import {
-  compareBundles,
-  modelDiagnostics,
-  qualityAnalysis,
-} from "./model";
+import { compareBundles, modelDiagnostics, qualityAnalysis } from "./model";
 import type {
   Artifact,
   ArtifactType,
@@ -14,25 +10,13 @@ import type {
 } from "./model";
 
 export type LifecycleState =
-  | "Draft"
-  | "Proposed"
-  | "In review"
-  | "Approved"
-  | "Superseded"
-  | "Retired";
+  "Draft" | "Proposed" | "In review" | "Approved" | "Superseded" | "Retired";
 
 export type ReviewDisposition =
-  | "Approved"
-  | "Changes requested"
-  | "Rejected"
-  | "Acknowledged";
+  "Approved" | "Changes requested" | "Rejected" | "Acknowledged";
 
 export type EvidenceValidityStatus =
-  | "valid"
-  | "stale"
-  | "review-needed"
-  | "incomplete"
-  | "superseded";
+  "valid" | "stale" | "review-needed" | "incomplete" | "superseded";
 
 export type EvidenceValidity = {
   evidenceId: string;
@@ -168,7 +152,8 @@ export function lifecycleState(artifact: Artifact): LifecycleState {
   if (status.includes("retir") || status.includes("archive")) return "Retired";
   if (status.includes("approv") || status === "accepted") return "Approved";
   if (status.includes("review")) return "In review";
-  if (status.includes("propos") || status.includes("candidate")) return "Proposed";
+  if (status.includes("propos") || status.includes("candidate"))
+    return "Proposed";
   return "Draft";
 }
 
@@ -197,11 +182,15 @@ export function transitionArtifactLifecycle(
   rationale: string,
   timestamp = new Date().toISOString(),
 ): ProjectBundle {
-  const current = bundle.artifacts.find((artifact) => artifact.id === artifactId);
+  const current = bundle.artifacts.find(
+    (artifact) => artifact.id === artifactId,
+  );
   if (!current) throw new Error(`Artifact ${artifactId} does not exist.`);
   const previousState = lifecycleState(current);
   if (!lifecycleTransitions[previousState].includes(nextState)) {
-    throw new Error(`${previousState} → ${nextState} is not an allowed lifecycle transition.`);
+    throw new Error(
+      `${previousState} → ${nextState} is not an allowed lifecycle transition.`,
+    );
   }
   const version = nextArtifactVersion(bundle, artifactId);
   const updated: Artifact = {
@@ -210,7 +199,11 @@ export function transitionArtifactLifecycle(
     updatedAt: timestamp,
     auditHistory: [
       ...(current.auditHistory || []),
-      auditMessage(actor, `Lifecycle ${previousState} → ${nextState}`, rationale),
+      auditMessage(
+        actor,
+        `Lifecycle ${previousState} → ${nextState}`,
+        rationale,
+      ),
     ].slice(-30),
     metadata: {
       ...(current.metadata || {}),
@@ -266,7 +259,9 @@ export function recordReviewDecision(
       reviewer: input.reviewer,
       disposition: input.disposition,
       targetArtifactId: target.id,
-      targetVersion: String(latestArtifactVersion(bundle, target.id)?.version || 0),
+      targetVersion: String(
+        latestArtifactVersion(bundle, target.id)?.version || 0,
+      ),
       rationale: input.rationale,
     },
   };
@@ -285,7 +280,11 @@ export function recordReviewDecision(
     reviewStatus: input.disposition,
     auditHistory: [
       ...(target.auditHistory || []),
-      auditMessage(input.reviewer, `Review ${input.disposition}`, input.rationale),
+      auditMessage(
+        input.reviewer,
+        `Review ${input.disposition}`,
+        input.rationale,
+      ),
     ].slice(-30),
   };
   return {
@@ -313,8 +312,14 @@ export function createChangeRequest(
     timestamp?: string;
   },
 ): ProjectBundle {
-  if (!bundle.artifacts.some((artifact) => artifact.id === input.originatingArtifactId)) {
-    throw new Error(`Originating artifact ${input.originatingArtifactId} does not exist.`);
+  if (
+    !bundle.artifacts.some(
+      (artifact) => artifact.id === input.originatingArtifactId,
+    )
+  ) {
+    throw new Error(
+      `Originating artifact ${input.originatingArtifactId} does not exist.`,
+    );
   }
   const timestamp = input.timestamp || new Date().toISOString();
   const count = bundle.artifacts.filter(
@@ -323,8 +328,9 @@ export function createChangeRequest(
   const id = `CR-${String(count + 1).padStart(3, "0")}-${timestamp
     .replace(/[^0-9]/g, "")
     .slice(0, 8)}`;
-  const affected = [...new Set(input.affectedArtifactIds)].filter((artifactId) =>
-    bundle.artifacts.some((artifact) => artifact.id === artifactId),
+  const affected = [...new Set(input.affectedArtifactIds)].filter(
+    (artifactId) =>
+      bundle.artifacts.some((artifact) => artifact.id === artifactId),
   );
   const changeRequest: Artifact = {
     id,
@@ -379,14 +385,16 @@ export function createVersionedBaseline(
   },
 ): ProjectBundle {
   const timestamp = input.timestamp || new Date().toISOString();
-  const includedTypes =
-    input.includedTypes || [...new Set(bundle.artifacts.map((artifact) => artifact.type))];
+  const includedTypes = input.includedTypes || [
+    ...new Set(bundle.artifacts.map((artifact) => artifact.type)),
+  ];
   const selectedArtifacts = bundle.artifacts.filter((artifact) =>
     includedTypes.includes(artifact.type),
   );
   const selectedIds = new Set(selectedArtifacts.map((artifact) => artifact.id));
   const selectedRelations = bundle.relations.filter(
-    (relation) => selectedIds.has(relation.from) && selectedIds.has(relation.to),
+    (relation) =>
+      selectedIds.has(relation.from) && selectedIds.has(relation.to),
   );
   const id = `BL-${String((bundle.baselines || []).length + 1).padStart(3, "0")}`;
   const baseline: Baseline = {
@@ -396,7 +404,9 @@ export function createVersionedBaseline(
     artifacts: structuredClone(selectedArtifacts),
     relations: structuredClone(selectedRelations),
     versions: structuredClone(
-      (bundle.versions || []).filter((entry) => selectedIds.has(entry.artifactId)),
+      (bundle.versions || []).filter((entry) =>
+        selectedIds.has(entry.artifactId),
+      ),
     ),
     relationHistory: structuredClone(bundle.relationHistory || []),
     includedTypes,
@@ -418,7 +428,10 @@ export function createVersionedBaseline(
 export function baselineMembership(baseline: Baseline) {
   const latest = new Map<string, number>();
   baseline.versions.forEach((entry) => {
-    latest.set(entry.artifactId, Math.max(latest.get(entry.artifactId) || 0, entry.version));
+    latest.set(
+      entry.artifactId,
+      Math.max(latest.get(entry.artifactId) || 0, entry.version),
+    );
   });
   return baseline.artifacts.map((artifact) => ({
     artifactId: artifact.id,
@@ -427,7 +440,10 @@ export function baselineMembership(baseline: Baseline) {
   }));
 }
 
-export function compareBaselineToCurrent(bundle: ProjectBundle, baseline: Baseline) {
+export function compareBaselineToCurrent(
+  bundle: ProjectBundle,
+  baseline: Baseline,
+) {
   return compareBundles(bundle, {
     version: 1,
     artifacts: baseline.artifacts,
@@ -440,7 +456,9 @@ export function compareBaselineToCurrent(bundle: ProjectBundle, baseline: Baseli
 
 function productionLineage(evidence: Artifact, bundle: ProjectBundle) {
   const producingTests = bundle.relations
-    .filter((relation) => relation.kind === "produces" && relation.to === evidence.id)
+    .filter(
+      (relation) => relation.kind === "produces" && relation.to === evidence.id,
+    )
     .map((relation) => relation.from);
   const requirementIds = bundle.relations
     .filter(
@@ -465,7 +483,9 @@ export function assessEvidenceValidity(
   const producedAt =
     evidence.metadata?.producedAt || evidence.createdAt || evidence.updatedAt;
   const baselineReference =
-    evidence.metadata?.baselineId || evidence.baseline || evidence.verification?.baseline;
+    evidence.metadata?.baselineId ||
+    evidence.baseline ||
+    evidence.verification?.baseline;
   const reviewer = evidence.metadata?.reviewer || evidence.owner;
   const reasons: string[] = [];
   const requirementVersions: Record<string, string> = {};
@@ -484,9 +504,12 @@ export function assessEvidenceValidity(
     };
   }
 
-  if (!lineage.testIds.length) reasons.push("No producing verification case is linked.");
+  if (!lineage.testIds.length)
+    reasons.push("No producing verification case is linked.");
   if (!lineage.requirementIds.length)
-    reasons.push("No requirement can be reached through the producing verification case.");
+    reasons.push(
+      "No requirement can be reached through the producing verification case.",
+    );
   if (!producedAt) reasons.push("Evidence production time is not recorded.");
 
   let stale = false;
@@ -507,14 +530,17 @@ export function assessEvidenceValidity(
       }
       if (producedAt && new Date(latest.timestamp) > new Date(producedAt)) {
         stale = true;
-        reasons.push(`${requirementId} changed after this evidence was produced.`);
+        reasons.push(
+          `${requirementId} changed after this evidence was produced.`,
+        );
       }
     }
   });
 
   if (baselineReference) {
     const baseline = (bundle.baselines || []).find(
-      (item) => item.id === baselineReference || item.name === baselineReference,
+      (item) =>
+        item.id === baselineReference || item.name === baselineReference,
     );
     if (!baseline) {
       reasons.push(
@@ -538,7 +564,11 @@ export function assessEvidenceValidity(
       reviewer,
     };
   }
-  if (!lineage.testIds.length || !lineage.requirementIds.length || !producedAt) {
+  if (
+    !lineage.testIds.length ||
+    !lineage.requirementIds.length ||
+    !producedAt
+  ) {
     return {
       evidenceId: evidence.id,
       status: "incomplete",
@@ -553,7 +583,8 @@ export function assessEvidenceValidity(
   }
   if (
     !reviewer ||
-    (evidence.reviewStatus && !normalizedStatus(evidence.reviewStatus).includes("approv"))
+    (evidence.reviewStatus &&
+      !normalizedStatus(evidence.reviewStatus).includes("approv"))
   ) {
     reasons.push("Evidence has not been explicitly approved by a reviewer.");
     return {
@@ -582,7 +613,9 @@ export function assessEvidenceValidity(
       reviewer,
     };
   }
-  reasons.push("Evidence lineage is complete and no newer requirement version was detected.");
+  reasons.push(
+    "Evidence lineage is complete and no newer requirement version was detected.",
+  );
   return {
     evidenceId: evidence.id,
     status: "valid",
@@ -596,28 +629,39 @@ export function assessEvidenceValidity(
   };
 }
 
-function baselineHasDivergedArtifact(bundle: ProjectBundle, artifact: Artifact) {
+function baselineHasDivergedArtifact(
+  bundle: ProjectBundle,
+  artifact: Artifact,
+) {
   const latest = [...(bundle.baselines || [])].sort((a, b) =>
     b.createdAt.localeCompare(a.createdAt),
   )[0];
   if (!latest) return false;
   const snapshot = latest.artifacts.find((item) => item.id === artifact.id);
-  return Boolean(snapshot && JSON.stringify(snapshot) !== JSON.stringify(artifact));
+  return Boolean(
+    snapshot && JSON.stringify(snapshot) !== JSON.stringify(artifact),
+  );
 }
 
-function pathEdges(path: string[], relations: Relation[]): ExplainedImpactEdge[] {
+function pathEdges(
+  path: string[],
+  relations: Relation[],
+): ExplainedImpactEdge[] {
   const edges: ExplainedImpactEdge[] = [];
   for (let index = 0; index < path.length - 1; index += 1) {
     const from = path[index];
     const to = path[index + 1];
-    const relation = relations.find((item) => item.from === from && item.to === to);
+    const relation = relations.find(
+      (item) => item.from === from && item.to === to,
+    );
     if (!relation) continue;
     edges.push({
       from,
       to,
       kind: relation.kind,
       rationale:
-        relation.rationale || `Canonical ${relation.kind} relationship between ${from} and ${to}.`,
+        relation.rationale ||
+        `Canonical ${relation.kind} relationship between ${from} and ${to}.`,
       confidence: relation.confidence || "Not scored",
       provenance: relation.source || "Canonical project relationship",
     });
@@ -632,7 +676,9 @@ export function explainImpact(
 ): ExplainedImpact {
   const root = bundle.artifacts.find((artifact) => artifact.id === rootId);
   if (!root) throw new Error(`Artifact ${rootId} does not exist.`);
-  const byId = new Map(bundle.artifacts.map((artifact) => [artifact.id, artifact]));
+  const byId = new Map(
+    bundle.artifacts.map((artifact) => [artifact.id, artifact]),
+  );
   const paths = new Map<string, string[]>([[rootId, [rootId]]]);
   let frontier = [rootId];
   for (let depth = 1; depth <= maxDepth; depth += 1) {
@@ -652,10 +698,15 @@ export function explainImpact(
     .flatMap(([id, path]) => {
       const artifact = byId.get(id);
       if (!artifact) return [];
-      const signals: ImpactSignal[] = [path.length === 2 ? "direct" : "transitive"];
+      const signals: ImpactSignal[] = [
+        path.length === 2 ? "direct" : "transitive",
+      ];
       if (artifact.type === "Test" || artifact.type === "VerificationMethod")
         signals.push("verification");
-      if (artifact.type === "Evidence" || artifact.type === "EvidenceArtifact") {
+      if (
+        artifact.type === "Evidence" ||
+        artifact.type === "EvidenceArtifact"
+      ) {
         signals.push("evidence");
         if (assessEvidenceValidity(artifact, bundle).status === "stale")
           signals.push("evidence-stale");
@@ -763,12 +814,19 @@ function baselineMention(query: string, baselines: Baseline[]) {
   );
 }
 
-export function runTraceQuery(query: string, bundle: ProjectBundle): TraceQueryResult {
+export function runTraceQuery(
+  query: string,
+  bundle: ProjectBundle,
+): TraceQueryResult {
   const normalized = query.trim().toLowerCase();
   const requirements = bundle.artifacts.filter(
     (artifact) => artifact.type === "Requirement",
   );
-  if (/requirement/.test(normalized) && /(without|missing)/.test(normalized) && /verif/.test(normalized)) {
+  if (
+    /requirement/.test(normalized) &&
+    /(without|missing)/.test(normalized) &&
+    /verif/.test(normalized)
+  ) {
     const ids = requirements
       .filter(
         (artifact) =>
@@ -782,23 +840,36 @@ export function runTraceQuery(query: string, bundle: ProjectBundle): TraceQueryR
       query,
       kind: "missing-verification",
       summary: `${ids.length} requirements have no canonical verified-by relationship.`,
-      definition: "A requirement is covered only when it has an outgoing verified-by relationship to a verification case.",
+      definition:
+        "A requirement is covered only when it has an outgoing verified-by relationship to a verification case.",
       artifactIds: ids,
       paths: [],
-      limitations: ["This query measures planned verification linkage, not whether evidence is current or valid."],
+      limitations: [
+        "This query measures planned verification linkage, not whether evidence is current or valid.",
+      ],
     };
   }
-  if (/need/.test(normalized) && /(without|missing)/.test(normalized) && /approved/.test(normalized)) {
+  if (
+    /need/.test(normalized) &&
+    /(without|missing)/.test(normalized) &&
+    /approved/.test(normalized)
+  ) {
     const ids = bundle.artifacts
       .filter((artifact) => artifact.type === "Need")
       .filter((need) => {
         const refinements = bundle.relations
-          .filter((relation) => relation.from === need.id && relation.kind === "refines")
-          .map((relation) => bundle.artifacts.find((artifact) => artifact.id === relation.to))
+          .filter(
+            (relation) =>
+              relation.from === need.id && relation.kind === "refines",
+          )
+          .map((relation) =>
+            bundle.artifacts.find((artifact) => artifact.id === relation.to),
+          )
           .filter((artifact): artifact is Artifact => Boolean(artifact));
         return !refinements.some(
           (artifact) =>
-            artifact.type === "Requirement" && lifecycleState(artifact) === "Approved",
+            artifact.type === "Requirement" &&
+            lifecycleState(artifact) === "Approved",
         );
       })
       .map((artifact) => artifact.id);
@@ -806,31 +877,42 @@ export function runTraceQuery(query: string, bundle: ProjectBundle): TraceQueryR
       query,
       kind: "unapproved-need",
       summary: `${ids.length} needs have no linked requirement in the Approved lifecycle state.`,
-      definition: "A need is satisfied for this query when an outgoing refines relationship reaches an approved requirement.",
+      definition:
+        "A need is satisfied for this query when an outgoing refines relationship reaches an approved requirement.",
       artifactIds: ids,
       paths: [],
-      limitations: ["Approval state is normalized from the current artifact status; review decisions remain separate records."],
+      limitations: [
+        "Approval state is normalized from the current artifact status; review decisions remain separate records.",
+      ],
     };
   }
-  if (/test/.test(normalized) && /critical/.test(normalized) && /verif/.test(normalized)) {
+  if (
+    /test/.test(normalized) &&
+    /critical/.test(normalized) &&
+    /verif/.test(normalized)
+  ) {
     const critical = new Set(
       requirements
         .filter(
           (artifact) =>
-            normalizedStatus(artifact.priority || artifact.criticality || "") === "critical",
+            normalizedStatus(
+              artifact.priority || artifact.criticality || "",
+            ) === "critical",
         )
         .map((artifact) => artifact.id),
     );
     const ids = bundle.relations
       .filter(
-        (relation) => relation.kind === "verified-by" && critical.has(relation.from),
+        (relation) =>
+          relation.kind === "verified-by" && critical.has(relation.from),
       )
       .map((relation) => relation.to);
     return {
       query,
       kind: "critical-verification",
       summary: `${new Set(ids).size} tests verify requirements marked Critical.`,
-      definition: "Criticality comes from the requirement priority/criticality field; tests are reached through verified-by relationships.",
+      definition:
+        "Criticality comes from the requirement priority/criticality field; tests are reached through verified-by relationships.",
       artifactIds: [...new Set(ids)],
       paths: [],
       limitations: ["This does not infer criticality from free text."],
@@ -843,24 +925,36 @@ export function runTraceQuery(query: string, bundle: ProjectBundle): TraceQueryR
       query,
       kind: "impact",
       summary: `${impact.entries.length} downstream artifacts are structurally reachable from ${idMatch[0]}.`,
-      definition: "Impact follows directed canonical relationships and preserves every relationship kind used in the explanation chain.",
+      definition:
+        "Impact follows directed canonical relationships and preserves every relationship kind used in the explanation chain.",
       artifactIds: impact.entries.map((entry) => entry.artifact.id),
       paths: impact.entries.map((entry) => entry.path),
       limitations: impact.limitations,
     };
   }
-  if (/changed between|baseline.*diff|diff.*baseline|latest two baselines/.test(normalized)) {
+  if (
+    /changed between|baseline.*diff|diff.*baseline|latest two baselines/.test(
+      normalized,
+    )
+  ) {
     const mentioned = baselineMention(query, bundle.baselines || []);
-    const pair = mentioned.length >= 2 ? mentioned.slice(0, 2) : latestTwoBaselines(bundle);
+    const pair =
+      mentioned.length >= 2
+        ? mentioned.slice(0, 2)
+        : latestTwoBaselines(bundle);
     if (pair.length < 2) {
       return {
         query,
         kind: "baseline-diff",
-        summary: "At least two stored baselines are required for a baseline-to-baseline comparison.",
-        definition: "Baseline comparison uses the immutable artifact and relationship snapshots stored in each baseline.",
+        summary:
+          "At least two stored baselines are required for a baseline-to-baseline comparison.",
+        definition:
+          "Baseline comparison uses the immutable artifact and relationship snapshots stored in each baseline.",
         artifactIds: [],
         paths: [],
-        limitations: ["Create another approved baseline before running this comparison."],
+        limitations: [
+          "Create another approved baseline before running this comparison.",
+        ],
       };
     }
     const newer = pair[0];
@@ -886,27 +980,40 @@ export function runTraceQuery(query: string, bundle: ProjectBundle): TraceQueryR
       query,
       kind: "baseline-diff",
       summary: `${ids.length} artifact changes between ${older.name} and ${newer.name}; ${diff.addedRelations.length + diff.removedRelations.length} relationship changes.`,
-      definition: "Changed artifacts are compared by canonical serialized content; relationships are compared by from/kind/to identity.",
+      definition:
+        "Changed artifacts are compared by canonical serialized content; relationships are compared by from/kind/to identity.",
       artifactIds: ids,
       paths: [],
-      limitations: ["The comparison does not claim semantic equivalence between renamed or re-keyed artifacts."],
+      limitations: [
+        "The comparison does not claim semantic equivalence between renamed or re-keyed artifacts.",
+      ],
     };
   }
-  if (/evidence/.test(normalized) && /(older|stale|outdated)/.test(normalized)) {
+  if (
+    /evidence/.test(normalized) &&
+    /(older|stale|outdated)/.test(normalized)
+  ) {
     const stale = bundle.artifacts
       .filter(
-        (artifact) => artifact.type === "Evidence" || artifact.type === "EvidenceArtifact",
+        (artifact) =>
+          artifact.type === "Evidence" || artifact.type === "EvidenceArtifact",
       )
-      .filter((artifact) => assessEvidenceValidity(artifact, bundle).status === "stale")
+      .filter(
+        (artifact) =>
+          assessEvidenceValidity(artifact, bundle).status === "stale",
+      )
       .map((artifact) => artifact.id);
     return {
       query,
       kind: "stale-evidence",
       summary: `${stale.length} evidence records are stale relative to a linked requirement version or change timestamp.`,
-      definition: "Evidence is stale when a linked requirement has a newer canonical version or changed after evidence production.",
+      definition:
+        "Evidence is stale when a linked requirement has a newer canonical version or changed after evidence production.",
       artifactIds: stale,
       paths: [],
-      limitations: ["Evidence without enough production/provenance metadata is reported as incomplete rather than stale."],
+      limitations: [
+        "Evidence without enough production/provenance metadata is reported as incomplete rather than stale.",
+      ],
     };
   }
   if (/orphan/.test(normalized)) {
@@ -928,30 +1035,39 @@ export function runTraceQuery(query: string, bundle: ProjectBundle): TraceQueryR
       query,
       kind: "orphan",
       summary: `${ids.length} architecture artifacts have no canonical relationship.`,
-      definition: "An orphan has no incoming or outgoing canonical relationship in the current bundle.",
+      definition:
+        "An orphan has no incoming or outgoing canonical relationship in the current bundle.",
       artifactIds: ids,
       paths: [],
-      limitations: ["An intentional standalone reference element may still appear as an orphan."],
+      limitations: [
+        "An intentional standalone reference element may still appear as an orphan.",
+      ],
     };
   }
-  const pathMatch = query.toUpperCase().match(/PATHS? FROM\s+([A-Z0-9-]+)\s+TO\s+([A-Z0-9-]+)/);
+  const pathMatch = query
+    .toUpperCase()
+    .match(/PATHS? FROM\s+([A-Z0-9-]+)\s+TO\s+([A-Z0-9-]+)/);
   if (pathMatch) {
     const paths = allPaths(pathMatch[1], pathMatch[2], bundle.relations);
     return {
       query,
       kind: "path",
       summary: `${paths.length} directed paths found from ${pathMatch[1]} to ${pathMatch[2]}.`,
-      definition: "Paths preserve canonical relationship direction and exclude cycles within each returned path.",
+      definition:
+        "Paths preserve canonical relationship direction and exclude cycles within each returned path.",
       artifactIds: [...new Set(paths.flat())],
       paths,
-      limitations: ["Results are capped at 25 paths and eight relationship hops for inspectability."],
+      limitations: [
+        "Results are capped at 25 paths and eight relationship hops for inspectability.",
+      ],
     };
   }
   return {
     query,
     kind: "unsupported",
     summary: "This local deterministic query was not recognized.",
-    definition: "TraceGraph translates a constrained set of engineering questions into deterministic graph operations; it does not fabricate an answer for unsupported phrasing.",
+    definition:
+      "TraceGraph translates a constrained set of engineering questions into deterministic graph operations; it does not fabricate an answer for unsupported phrasing.",
     artifactIds: [],
     paths: [],
     limitations: [`Try one of: ${TRACE_QUERY_EXAMPLES.join(" · ")}`],
@@ -967,8 +1083,11 @@ function sentenceCandidates(text: string) {
 
 function candidateType(sentence: string): ArtifactType {
   if (/\b(assume|assuming|assumption)\b/i.test(sentence)) return "Assumption";
-  if (/\b(concern|worry|risk|problem|issue|fear)\b/i.test(sentence)) return "Concern";
-  if (/\b(constraint|cannot|must not|limited to|no more than)\b/i.test(sentence))
+  if (/\b(concern|worry|risk|problem|issue|fear)\b/i.test(sentence))
+    return "Concern";
+  if (
+    /\b(constraint|cannot|must not|limited to|no more than)\b/i.test(sentence)
+  )
     return "Constraint";
   if (/\b(shall|must|required to)\b/i.test(sentence)) return "Requirement";
   return "Need";
@@ -983,7 +1102,10 @@ function candidateConfidence(sentence: string) {
 }
 
 function candidateName(sentence: string, type: ArtifactType, index: number) {
-  const words = sentence.replace(/[^A-Za-z0-9\s-]/g, "").split(/\s+/).slice(0, 7);
+  const words = sentence
+    .replace(/[^A-Za-z0-9\s-]/g, "")
+    .split(/\s+/)
+    .slice(0, 7);
   return `${type} candidate ${index + 1}: ${words.join(" ")}`;
 }
 
@@ -1038,7 +1160,13 @@ export function acceptElicitationCandidate(
     id,
     status: candidate.artifact.type === "Requirement" ? "Draft" : "Candidate",
     createdAt: timestamp,
-    auditHistory: [auditMessage(actor, "Accepted elicitation suggestion", candidate.rationale)],
+    auditHistory: [
+      auditMessage(
+        actor,
+        "Accepted elicitation suggestion",
+        candidate.rationale,
+      ),
+    ],
     metadata: {
       ...(candidate.artifact.metadata || {}),
       suggestionState: "Accepted into canonical model",
@@ -1046,14 +1174,17 @@ export function acceptElicitationCandidate(
       acceptedAt: timestamp,
     },
   };
-  const source = bundle.artifacts.find((artifact) => artifact.id === candidate.sourceId);
+  const source = bundle.artifacts.find(
+    (artifact) => artifact.id === candidate.sourceId,
+  );
   const relation: Relation | null = source
     ? source.type === "ElicitationRecord"
       ? {
           from: source.id,
           to: id,
           kind: "captures",
-          rationale: "Accepted candidate retains its originating elicitation record.",
+          rationale:
+            "Accepted candidate retains its originating elicitation record.",
           source: source.id,
           createdAt: timestamp,
         }
@@ -1061,7 +1192,8 @@ export function acceptElicitationCandidate(
           from: id,
           to: source.id,
           kind: "captured-from",
-          rationale: "Accepted candidate retains its source-document provenance.",
+          rationale:
+            "Accepted candidate retains its source-document provenance.",
           source: source.id,
           createdAt: timestamp,
         }
@@ -1089,7 +1221,9 @@ function acronymDefinitions(text: string) {
   return defined;
 }
 
-export function corpusQualityFindings(bundle: ProjectBundle): CorpusQualityFinding[] {
+export function corpusQualityFindings(
+  bundle: ProjectBundle,
+): CorpusQualityFinding[] {
   const requirements = bundle.artifacts.filter(
     (artifact) => artifact.type === "Requirement",
   );
@@ -1107,16 +1241,22 @@ export function corpusQualityFindings(bundle: ProjectBundle): CorpusQualityFindi
         artifactIds: group.map((artifact) => artifact.id),
         rule: "duplicate-requirement",
         severity: "advisory",
-        message: "Multiple requirements use the same normalized obligation text.",
+        message:
+          "Multiple requirements use the same normalized obligation text.",
         why: "Duplicate obligations can diverge independently and make coverage counts misleading.",
-        suggestion: "Choose one canonical requirement or explicitly relate intentional variants.",
+        suggestion:
+          "Choose one canonical requirement or explicitly relate intentional variants.",
       });
     });
 
   const positive = requirements.filter(
-    (artifact) => /\bshall\b/i.test(artifact.description) && !/\bshall\s+not\b/i.test(artifact.description),
+    (artifact) =>
+      /\bshall\b/i.test(artifact.description) &&
+      !/\bshall\s+not\b/i.test(artifact.description),
   );
-  const negative = requirements.filter((artifact) => /\bshall\s+not\b/i.test(artifact.description));
+  const negative = requirements.filter((artifact) =>
+    /\bshall\s+not\b/i.test(artifact.description),
+  );
   positive.forEach((left) => {
     const leftTokens = new Set(
       normalizedRequirementText(left.description)
@@ -1133,19 +1273,24 @@ export function corpusQualityFindings(bundle: ProjectBundle): CorpusQualityFindi
           artifactIds: [left.id, right.id],
           rule: "possible-conflict",
           severity: "required",
-          message: "A positive and negative obligation share substantial terminology.",
+          message:
+            "A positive and negative obligation share substantial terminology.",
           why: "Opposing obligations over the same subject may create an unresolved acceptance conflict.",
-          suggestion: "Review conditions, scope, and precedence before approving either requirement.",
+          suggestion:
+            "Review conditions, scope, and precedence before approving either requirement.",
         });
       }
     });
   });
 
-  const corpus = requirements.map((artifact) => artifact.description).join("\n");
+  const corpus = requirements
+    .map((artifact) => artifact.description)
+    .join("\n");
   const definitions = acronymDefinitions(corpus);
   const acronymOwners = new Map<string, Set<string>>();
   requirements.forEach((artifact) => {
-    const acronyms = artifact.description.match(/\b[A-Z][A-Z0-9]{1,7}\b/g) || [];
+    const acronyms =
+      artifact.description.match(/\b[A-Z][A-Z0-9]{1,7}\b/g) || [];
     acronyms.forEach((acronym) => {
       if (definitions.has(acronym)) return;
       acronymOwners.set(
@@ -1170,17 +1315,23 @@ export function corpusQualityFindings(bundle: ProjectBundle): CorpusQualityFindi
     /\b(telemetry|flight data|mission data)\b/i.test(artifact.description),
   );
   if (
-    telemetryTerms.some((artifact) => /\btelemetry\b/i.test(artifact.description)) &&
-    telemetryTerms.some((artifact) => /\b(flight data|mission data)\b/i.test(artifact.description))
+    telemetryTerms.some((artifact) =>
+      /\btelemetry\b/i.test(artifact.description),
+    ) &&
+    telemetryTerms.some((artifact) =>
+      /\b(flight data|mission data)\b/i.test(artifact.description),
+    )
   ) {
     findings.push({
       id: "term-telemetry-data",
       artifactIds: telemetryTerms.slice(0, 20).map((artifact) => artifact.id),
       rule: "inconsistent-term",
       severity: "advisory",
-      message: "Telemetry, flight data, and mission data are used as overlapping terms.",
+      message:
+        "Telemetry, flight data, and mission data are used as overlapping terms.",
       why: "Terminology drift can create hidden differences in interface and verification scope.",
-      suggestion: "Choose a controlled term and define narrower terms explicitly where they differ.",
+      suggestion:
+        "Choose a controlled term and define narrower terms explicitly where they differ.",
     });
   }
   return findings;
@@ -1196,7 +1347,9 @@ function structuredRewrite(artifact: Artifact) {
   return `${structure.actor} shall ${structure.action} ${structure.object}${condition}${threshold}.`;
 }
 
-export function assistantSuggestions(bundle: ProjectBundle): AssistantSuggestion[] {
+export function assistantSuggestions(
+  bundle: ProjectBundle,
+): AssistantSuggestion[] {
   const suggestions: AssistantSuggestion[] = [];
   const requirements = bundle.artifacts.filter(
     (artifact) => artifact.type === "Requirement",
@@ -1214,11 +1367,13 @@ export function assistantSuggestions(bundle: ProjectBundle): AssistantSuggestion
         title: `Suggested rewrite for ${artifact.id}`,
         rationale: requiredFindings.map((finding) => finding.rule).join(", "),
         proposal: rewrite,
-        limitation: "Suggestion only. It is not canonical until a reviewer explicitly edits and saves the requirement.",
+        limitation:
+          "Suggestion only. It is not canonical until a reviewer explicitly edits and saves the requirement.",
       });
     }
     const hasVerification = bundle.relations.some(
-      (relation) => relation.from === artifact.id && relation.kind === "verified-by",
+      (relation) =>
+        relation.from === artifact.id && relation.kind === "verified-by",
     );
     if (!hasVerification) {
       suggestions.push({
@@ -1228,14 +1383,16 @@ export function assistantSuggestions(bundle: ProjectBundle): AssistantSuggestion
         title: `Plan verification for ${artifact.id}`,
         rationale: "No canonical verified-by relationship exists.",
         proposal: `Review ${artifact.id} and select an explicit verification method before approval.`,
-        limitation: "No test is auto-created because TraceGraph cannot infer a valid procedure or acceptance environment from linkage alone.",
+        limitation:
+          "No test is auto-created because TraceGraph cannot infer a valid procedure or acceptance environment from linkage alone.",
       });
     }
   });
 
   bundle.artifacts
     .filter(
-      (artifact) => artifact.type === "Evidence" || artifact.type === "EvidenceArtifact",
+      (artifact) =>
+        artifact.type === "Evidence" || artifact.type === "EvidenceArtifact",
     )
     .forEach((artifact) => {
       const validity = assessEvidenceValidity(artifact, bundle);
@@ -1247,7 +1404,8 @@ export function assistantSuggestions(bundle: ProjectBundle): AssistantSuggestion
           title: `Refresh ${artifact.id}`,
           rationale: validity.reasons.join(" "),
           proposal: `Re-run or re-review ${validity.testIds.join(", ") || "the producing verification"} against the current requirement version before reusing ${artifact.id}.`,
-          limitation: "TraceGraph marks the record stale structurally; it does not claim the underlying engineering result is invalid without review.",
+          limitation:
+            "TraceGraph marks the record stale structurally; it does not claim the underlying engineering result is invalid without review.",
         });
       }
     });
@@ -1259,9 +1417,12 @@ export function assistantSuggestions(bundle: ProjectBundle): AssistantSuggestion
       kind: "conflict-review",
       artifactId,
       title: `Review potential conflict around ${artifactId}`,
-      rationale: "Model diagnostics found requirements with the same normalized name but different statements.",
-      proposal: "Compare scope, conditions, rationale, and verification intent before approving the requirements.",
-      limitation: "This is a deterministic review prompt, not a semantic contradiction judgment.",
+      rationale:
+        "Model diagnostics found requirements with the same normalized name but different statements.",
+      proposal:
+        "Compare scope, conditions, rationale, and verification intent before approving the requirements.",
+      limitation:
+        "This is a deterministic review prompt, not a semantic contradiction judgment.",
     });
   });
   return suggestions.slice(0, 30);

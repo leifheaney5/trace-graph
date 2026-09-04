@@ -13,7 +13,8 @@ function TraceGraphRoot() {
   useEffect(() => {
     const reloadCore = () => setCoreRevision((revision) => revision + 1);
     window.addEventListener("tracegraph:reload-core", reloadCore);
-    return () => window.removeEventListener("tracegraph:reload-core", reloadCore);
+    return () =>
+      window.removeEventListener("tracegraph:reload-core", reloadCore);
   }, []);
 
   return (

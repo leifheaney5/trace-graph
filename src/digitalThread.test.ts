@@ -93,17 +93,32 @@ const evidence: Artifact = {
 };
 
 const relations: Relation[] = [
-  { from: "REQ-100", to: "BLK-100", kind: "allocated-to", rationale: "Owned by telemetry service." },
-  { from: "REQ-100", to: "TST-100", kind: "verified-by", rationale: "Latency is directly tested." },
-  { from: "TST-100", to: "EVD-100", kind: "produces", rationale: "The test run produces this evidence." },
+  {
+    from: "REQ-100",
+    to: "BLK-100",
+    kind: "allocated-to",
+    rationale: "Owned by telemetry service.",
+  },
+  {
+    from: "REQ-100",
+    to: "TST-100",
+    kind: "verified-by",
+    rationale: "Latency is directly tested.",
+  },
+  {
+    from: "TST-100",
+    to: "EVD-100",
+    kind: "produces",
+    rationale: "The test run produces this evidence.",
+  },
 ];
 
 describe("version-aware digital-thread services", () => {
   it("normalizes lifecycle without treating review disposition as lifecycle", () => {
     expect(lifecycleState({ ...req, status: "Candidate" })).toBe("Proposed");
-    expect(lifecycleState({ ...req, status: "Approved", reviewStatus: "Rejected" })).toBe(
-      "Approved",
-    );
+    expect(
+      lifecycleState({ ...req, status: "Approved", reviewStatus: "Rejected" }),
+    ).toBe("Approved");
   });
 
   it("records lifecycle transitions as canonical artifact versions", () => {
@@ -117,9 +132,9 @@ describe("version-aware digital-thread services", () => {
     );
     expect(first.artifacts[0].status).toBe("Proposed");
     expect(latestArtifactVersion(first, req.id)?.version).toBe(1);
-    expect(latestArtifactVersion(first, req.id)?.snapshot.metadata?.lifecycleActor).toBe(
-      "Reviewer A",
-    );
+    expect(
+      latestArtifactVersion(first, req.id)?.snapshot.metadata?.lifecycleActor,
+    ).toBe("Reviewer A");
 
     const second = transitionArtifactLifecycle(
       first,
@@ -152,15 +167,22 @@ describe("version-aware digital-thread services", () => {
       rationale: "Trace and verification intent are acceptable.",
       timestamp: "2026-02-03T00:00:00.000Z",
     });
-    expect(reviewed.artifacts.find((artifact) => artifact.type === "ReviewSession")).toMatchObject({
+    expect(
+      reviewed.artifacts.find((artifact) => artifact.type === "ReviewSession"),
+    ).toMatchObject({
       owner: "Review board",
       status: "Recorded",
     });
-    expect(reviewed.artifacts.find((artifact) => artifact.id === req.id)?.status).toBe("Draft");
-    expect(reviewed.artifacts.find((artifact) => artifact.id === req.id)?.reviewStatus).toBe(
-      "Approved",
-    );
-    expect(reviewed.relations.some((relation) => relation.kind === "reviews")).toBe(true);
+    expect(
+      reviewed.artifacts.find((artifact) => artifact.id === req.id)?.status,
+    ).toBe("Draft");
+    expect(
+      reviewed.artifacts.find((artifact) => artifact.id === req.id)
+        ?.reviewStatus,
+    ).toBe("Approved");
+    expect(
+      reviewed.relations.some((relation) => relation.kind === "reviews"),
+    ).toBe(true);
   });
 
   it("marks evidence stale when a linked requirement changes after production", () => {
@@ -192,7 +214,10 @@ describe("version-aware digital-thread services", () => {
         requirementVersion: "1",
       },
     };
-    const current = bundleOf([req, testArtifact, currentEvidence], relations.slice(1));
+    const current = bundleOf(
+      [req, testArtifact, currentEvidence],
+      relations.slice(1),
+    );
     current.versions = [
       {
         id: "VER-REQ-100-0001",
@@ -217,9 +242,12 @@ describe("version-aware digital-thread services", () => {
         approvedAt: "2026-03-01T00:00:00.000Z",
       },
     ];
-    expect(assessEvidenceValidity(currentEvidence, current).status).toBe("valid");
+    expect(assessEvidenceValidity(currentEvidence, current).status).toBe(
+      "valid",
+    );
     expect(
-      assessEvidenceValidity({ ...currentEvidence, id: "EVD-404" }, current).status,
+      assessEvidenceValidity({ ...currentEvidence, id: "EVD-404" }, current)
+        .status,
     ).toBe("incomplete");
   });
 
@@ -229,28 +257,49 @@ describe("version-aware digital-thread services", () => {
     expect(impact.entries.map((entry) => entry.artifact.id)).toEqual(
       expect.arrayContaining([block.id, testArtifact.id, evidence.id]),
     );
-    const evidenceEntry = impact.entries.find((entry) => entry.artifact.id === evidence.id)!;
+    const evidenceEntry = impact.entries.find(
+      (entry) => entry.artifact.id === evidence.id,
+    )!;
     expect(evidenceEntry.path).toEqual([req.id, testArtifact.id, evidence.id]);
     expect(evidenceEntry.signals).toContain("evidence");
     expect(evidenceEntry.edges[0]).toMatchObject({
       kind: "verified-by",
       rationale: "Latency is directly tested.",
     });
-    expect(impact.limitations.join(" ")).toMatch(/not a probabilistic risk score/i);
+    expect(impact.limitations.join(" ")).toMatch(
+      /not a probabilistic risk score/i,
+    );
   });
 
   it("runs deterministic trace queries and refuses unsupported questions", () => {
-    const missing = { ...req, id: "REQ-101", name: "Unverified", priority: "Medium" };
-    const project = bundleOf([req, missing, block, testArtifact, evidence], relations);
-    const result = runTraceQuery("requirements without verification evidence", project);
+    const missing = {
+      ...req,
+      id: "REQ-101",
+      name: "Unverified",
+      priority: "Medium",
+    };
+    const project = bundleOf(
+      [req, missing, block, testArtifact, evidence],
+      relations,
+    );
+    const result = runTraceQuery(
+      "requirements without verification evidence",
+      project,
+    );
     expect(result.kind).toBe("missing-verification");
     expect(result.artifactIds).toContain("REQ-101");
 
-    const path = runTraceQuery("show every path from REQ-100 to EVD-100", project);
+    const path = runTraceQuery(
+      "show every path from REQ-100 to EVD-100",
+      project,
+    );
     expect(path.kind).toBe("path");
     expect(path.paths).toContainEqual(["REQ-100", "TST-100", "EVD-100"]);
 
-    const unsupported = runTraceQuery("predict project success next year", project);
+    const unsupported = runTraceQuery(
+      "predict project success next year",
+      project,
+    );
     expect(unsupported.kind).toBe("unsupported");
     expect(unsupported.limitations[0]).toContain(TRACE_QUERY_EXAMPLES[0]);
   });
@@ -271,11 +320,21 @@ describe("version-aware digital-thread services", () => {
     );
     expect(candidates).toHaveLength(2);
     expect(candidates[1].artifact.type).toBe("Requirement");
-    expect(project.artifacts.some((artifact) => artifact.id === candidates[0].id)).toBe(false);
+    expect(
+      project.artifacts.some((artifact) => artifact.id === candidates[0].id),
+    ).toBe(false);
 
-    const accepted = acceptElicitationCandidate(project, candidates[0], "Analyst");
-    const canonical = accepted.artifacts.find((artifact) => artifact.id.startsWith("CAN-"));
-    expect(canonical?.metadata?.suggestionState).toBe("Accepted into canonical model");
+    const accepted = acceptElicitationCandidate(
+      project,
+      candidates[0],
+      "Analyst",
+    );
+    const canonical = accepted.artifacts.find((artifact) =>
+      artifact.id.startsWith("CAN-"),
+    );
+    expect(canonical?.metadata?.suggestionState).toBe(
+      "Accepted into canonical model",
+    );
     expect(accepted.relations[0]).toMatchObject({
       from: "ELC-100",
       to: canonical?.id,
@@ -294,11 +353,15 @@ describe("version-aware digital-thread services", () => {
       reviewers: ["Review board"],
       timestamp: "2026-04-01T00:00:00.000Z",
     });
-    const request = changed.artifacts.find((artifact) => artifact.type === "ChangeRequest")!;
+    const request = changed.artifacts.find(
+      (artifact) => artifact.type === "ChangeRequest",
+    )!;
     expect(request.metadata?.affectedArtifactIds).toContain(block.id);
     expect(
       changed.relations.filter(
-        (relation) => relation.from === request.id && relation.kind === "proposes-change-to",
+        (relation) =>
+          relation.from === request.id &&
+          relation.kind === "proposes-change-to",
       ),
     ).toHaveLength(3);
   });
@@ -335,7 +398,9 @@ describe("version-aware digital-thread services", () => {
           : artifact,
       ),
     };
-    expect(compareBaselineToCurrent(current, baseline).changedArtifacts).toContain(req.id);
+    expect(
+      compareBaselineToCurrent(current, baseline).changedArtifacts,
+    ).toContain(req.id);
   });
 
   it("adds explainable corpus-level quality findings", () => {
@@ -343,12 +408,14 @@ describe("version-aware digital-thread services", () => {
     const positive: Artifact = {
       ...req,
       id: "REQ-103",
-      description: "The telemetry service shall transmit mission status to the console.",
+      description:
+        "The telemetry service shall transmit mission status to the console.",
     };
     const negative: Artifact = {
       ...req,
       id: "REQ-104",
-      description: "The telemetry service shall not transmit mission status to the console.",
+      description:
+        "The telemetry service shall not transmit mission status to the console.",
     };
     const acronym: Artifact = {
       ...req,
@@ -358,11 +425,17 @@ describe("version-aware digital-thread services", () => {
     const findings = corpusQualityFindings(
       bundleOf([req, duplicate, positive, negative, acronym]),
     );
-    expect(findings.some((finding) => finding.rule === "duplicate-requirement")).toBe(true);
-    expect(findings.some((finding) => finding.rule === "possible-conflict")).toBe(true);
+    expect(
+      findings.some((finding) => finding.rule === "duplicate-requirement"),
+    ).toBe(true);
+    expect(
+      findings.some((finding) => finding.rule === "possible-conflict"),
+    ).toBe(true);
     expect(
       findings.some(
-        (finding) => finding.rule === "undefined-acronym" && finding.message.includes("XYZ"),
+        (finding) =>
+          finding.rule === "undefined-acronym" &&
+          finding.message.includes("XYZ"),
       ),
     ).toBe(true);
   });
@@ -378,10 +451,14 @@ describe("version-aware digital-thread services", () => {
     const project = bundleOf([unverified]);
     const before = JSON.stringify(project);
     const suggestions = assistantSuggestions(project);
-    expect(suggestions.some((item) => item.kind === "verification-plan")).toBe(true);
-    expect(suggestions.every((item) => /not canonical|auto-created|deterministic/i.test(item.limitation))).toBe(
+    expect(suggestions.some((item) => item.kind === "verification-plan")).toBe(
       true,
     );
+    expect(
+      suggestions.every((item) =>
+        /not canonical|auto-created|deterministic/i.test(item.limitation),
+      ),
+    ).toBe(true);
     expect(JSON.stringify(project)).toBe(before);
   });
 });
