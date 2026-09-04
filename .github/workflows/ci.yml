@@ -25,11 +25,20 @@ jobs:
           const criticalPath = "tests/e2e/critical-workflow.spec.ts";
           let critical = fs.readFileSync(criticalPath, "utf8");
           const openLine = '    await page.getByRole("button", { name: "Open sample project" }).click();';
-          if (!critical.includes('page.locator(".sample-card")')) {
+          const sampleSelection = /    await page\s*\n\s*\.locator\("\.sample-card"\)\s*\n\s*\.filter\(\{ hasText: "Emergency Response Drone" \}\)\s*\n\s*\.click\(\);/g;
+          const existingSelections = critical.match(sampleSelection) || [];
+          if (existingSelections.length === 0) {
             const first = critical.indexOf(openLine);
             if (first === -1) throw new Error("Could not find initial sample-project action");
             const insertAt = first + openLine.length;
             critical = `${critical.slice(0, insertAt)}\n    await page.locator(".sample-card").filter({ hasText: "Emergency Response Drone" }).click();${critical.slice(insertAt)}`;
+          } else if (existingSelections.length > 1) {
+            let kept = false;
+            critical = critical.replace(sampleSelection, (match) => {
+              if (kept) return "";
+              kept = true;
+              return match;
+            });
           }
           const recoveryMarker = '    await page.reload();\n    await page.getByRole("button", { name: "Open sample project" }).click();';
           if (critical.includes(recoveryMarker) && !critical.includes(`${recoveryMarker}\n    await page.getByRole("button", { name: "Cancel" }).click();`)) {
