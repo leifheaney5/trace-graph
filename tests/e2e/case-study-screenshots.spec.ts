@@ -21,9 +21,7 @@ test("capture case-study evidence from deterministic sample data", async ({
   ).toBeVisible();
   await screenshot(page, "landing");
 
-  await page
-    .getByRole("button", { name: "Restart guided workflow" })
-    .click();
+  await page.getByRole("button", { name: "Restart guided workflow" }).click();
   await expect(
     page.getByRole("dialog", { name: /Start with stakeholder intent/i }),
   ).toBeVisible();
@@ -35,7 +33,9 @@ test("capture case-study evidence from deterministic sample data", async ({
   await page.goto("/");
   await page.getByRole("button", { name: "Explore sample" }).click();
   await expect(
-    page.getByRole("heading", { name: /From stakeholder need to verified evidence/i }),
+    page.getByRole("heading", {
+      name: /From stakeholder need to verified evidence/i,
+    }),
   ).toBeVisible();
 
   await primaryNav(page)
