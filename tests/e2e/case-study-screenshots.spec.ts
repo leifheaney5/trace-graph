@@ -10,7 +10,9 @@ const screenshot = async (page: Page, name: string) => {
 const primaryNav = (page: Page) =>
   page.locator('nav[aria-label="Primary navigation"]');
 
-test("capture case-study evidence from deterministic sample data", async ({ page }) => {
+test("capture case-study evidence from deterministic sample data", async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto("/");
 

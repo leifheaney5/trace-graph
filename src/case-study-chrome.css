@@ -104,7 +104,9 @@
 .workflow-rail button:focus-visible {
   border-color: #7da7ff;
   outline: 2px solid transparent;
-  box-shadow: 0 0 0 2px #182449, 0 0 0 4px #7da7ff;
+  box-shadow:
+    0 0 0 2px #182449,
+    0 0 0 4px #7da7ff;
 }
 
 .workflow-rail {

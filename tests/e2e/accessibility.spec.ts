@@ -7,7 +7,10 @@ async function expectNoHighImpactViolations(page: Page, label: string) {
     (violation) =>
       violation.impact === "critical" || violation.impact === "serious",
   );
-  expect(violations, `${label} should have no critical or serious axe violations`).toEqual([]);
+  expect(
+    violations,
+    `${label} should have no critical or serious axe violations`,
+  ).toEqual([]);
 }
 
 test("case-study workflow surfaces remain free of critical and serious accessibility violations", async ({
