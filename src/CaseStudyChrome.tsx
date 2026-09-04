@@ -192,7 +192,7 @@ export default function CaseStudyChrome() {
               Explore sample
             </button>
             <button type="button" onClick={restartTour}>
-              Restart guided workflow
+              Restart digital-thread tour
             </button>
           </div>
         </div>

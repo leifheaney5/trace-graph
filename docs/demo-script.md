@@ -74,7 +74,7 @@ Expected result: exports are generated from canonical project data. Mermaid impo
 
 ## Restart the guided path
 
-Select **Restart guided workflow** at any point. The restart control reuses the built-in guided tour and does not create a second project model.
+Select **Restart digital-thread tour** at any point. The restart control reuses the built-in guided tour and does not create a second project model.
 
 ## Reproduce the case-study screenshots
 

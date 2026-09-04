@@ -21,7 +21,9 @@ test("capture case-study evidence from deterministic sample data", async ({
   ).toBeVisible();
   await screenshot(page, "landing");
 
-  await page.getByRole("button", { name: "Restart guided workflow" }).click();
+  await page
+    .getByRole("button", { name: "Restart digital-thread tour" })
+    .click();
   await expect(
     page.getByRole("dialog", { name: /Start with stakeholder intent/i }),
   ).toBeVisible();

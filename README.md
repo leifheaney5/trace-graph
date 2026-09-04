@@ -35,7 +35,7 @@ The interface keeps the full digital thread visible in a persistent workflow rai
 - **Local-first**: the guest workbench has no remote project data plane.
 - **Canonical model**: views are projections over shared artifacts and relationships.
 
-Start with **Open sample project** or **Explore sample**, then use **Start five-minute tour** or **Restart guided workflow** to follow the end-to-end thread.
+Start with **Open sample project** or **Explore sample**, then use **Start five-minute tour** or **Restart digital-thread tour** to follow the end-to-end thread.
 
 ## Synthetic sample
 

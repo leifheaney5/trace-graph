@@ -38,6 +38,10 @@ test(
       .locator(".sample-card")
       .filter({ hasText: "Emergency Response Drone" })
       .click();
+    await page
+      .locator(".sample-card")
+      .filter({ hasText: "Emergency Response Drone" })
+      .click();
     await expect(
       page.getByRole("heading", { name: /stakeholder need/i }),
     ).toBeVisible();
