@@ -146,9 +146,8 @@ export default function CaseStudyChrome() {
   }, [currentView, tourStep]);
 
   const startSample = () => {
-    const projectSwitcher = document.querySelector<HTMLButtonElement>(
-      ".project-switcher",
-    );
+    const projectSwitcher =
+      document.querySelector<HTMLButtonElement>(".project-switcher");
     if (projectSwitcher) {
       projectSwitcher.click();
       selectEmergencySample();
@@ -168,7 +167,10 @@ export default function CaseStudyChrome() {
 
   return (
     <>
-      <aside className="case-study-chrome" aria-label="TraceGraph workflow guide">
+      <aside
+        className="case-study-chrome"
+        aria-label="TraceGraph workflow guide"
+      >
         <div className="case-study-chrome__meta">
           <div>
             <span className="case-study-chrome__kicker">
@@ -244,7 +246,8 @@ export default function CaseStudyChrome() {
           >
             <div className="case-study-tour__header">
               <span>
-                Guided digital thread · {String(tourStep + 1).padStart(2, "0")} of {String(workflow.length).padStart(2, "0")}
+                Guided digital thread · {String(tourStep + 1).padStart(2, "0")}{" "}
+                of {String(workflow.length).padStart(2, "0")}
               </span>
               <button
                 type="button"
@@ -256,11 +259,20 @@ export default function CaseStudyChrome() {
             </div>
             <h2 id="case-study-tour-title">{currentTourStep.title}</h2>
             <p id="case-study-tour-body">{currentTourStep.body}</p>
-            <ol className="case-study-tour__progress" aria-label="Tour progress">
+            <ol
+              className="case-study-tour__progress"
+              aria-label="Tour progress"
+            >
               {workflow.map((step, index) => (
                 <li
                   key={step.label}
-                  className={index === tourStep ? "is-current" : index < tourStep ? "is-complete" : ""}
+                  className={
+                    index === tourStep
+                      ? "is-current"
+                      : index < tourStep
+                        ? "is-complete"
+                        : ""
+                  }
                   aria-current={index === tourStep ? "step" : undefined}
                 >
                   <span className="sr-only">{step.label}</span>
@@ -289,7 +301,9 @@ export default function CaseStudyChrome() {
                   }
                 }}
               >
-                {tourStep === workflow.length - 1 ? "Finish tour" : "Next stage"}
+                {tourStep === workflow.length - 1
+                  ? "Finish tour"
+                  : "Next stage"}
               </button>
             </div>
           </section>
