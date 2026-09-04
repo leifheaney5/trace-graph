@@ -39,4 +39,16 @@ test("case-study workflow surfaces remain free of critical and serious accessibi
     await workflow.getByRole("button", { name: new RegExp(step, "i") }).click();
     await expectNoHighImpactViolations(page, step);
   }
+
+  await page.locator(".dt-launcher").click();
+  const intelligence = page.getByRole("dialog", {
+    name: "Engineering intelligence workbench",
+  });
+  await expect(intelligence).toBeVisible();
+  await expectNoHighImpactViolations(page, "engineering intelligence overview");
+
+  for (const section of ["Impact", "Trace queries", "Evidence validity", "Elicitation"]) {
+    await intelligence.getByRole("button", { name: section, exact: true }).click();
+    await expectNoHighImpactViolations(page, `engineering intelligence ${section}`);
+  }
 });
