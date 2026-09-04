@@ -7,7 +7,7 @@ import App from "./App.tsx";
 import CaseStudyChrome from "./CaseStudyChrome.tsx";
 import DigitalThreadWorkbench from "./DigitalThreadWorkbench.tsx";
 
-function TraceGraphRoot() {
+export function TraceGraphRoot() {
   const [coreRevision, setCoreRevision] = useState(0);
 
   useEffect(() => {
