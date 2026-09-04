@@ -34,6 +34,10 @@ test(
     await page.goto("/");
 
     await page.getByRole("button", { name: "Open sample project" }).click();
+    await page
+      .locator(".sample-card")
+      .filter({ hasText: "Emergency Response Drone" })
+      .click();
     await expect(
       page.getByRole("heading", { name: /stakeholder need/i }),
     ).toBeVisible();
@@ -598,6 +602,7 @@ test(
     ).toBeVisible();
     await page.reload();
     await page.getByRole("button", { name: "Open sample project" }).click();
+    await page.getByRole("button", { name: "Cancel" }).click();
     await page
       .locator('nav[aria-label="Primary navigation"]')
       .getByRole("button", { name: /Requirements/ })
