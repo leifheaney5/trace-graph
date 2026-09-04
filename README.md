@@ -1,65 +1,90 @@
 # TraceGraph
 
-TraceGraph is a local-first requirements engineering and digital-thread workbench. It connects stakeholder intent, requirements, architecture, verification evidence, and change impact in one inspectable model.
+TraceGraph is a local-first requirements engineering and digital-thread workbench for turning stakeholder intent into inspectable engineering evidence.
 
-## Current vertical slice
+Its canonical workflow is:
 
-The public demo ships with a synthetic Emergency Response Drone project and supports guided and engineering modes, a restartable five-minute tour, elicitation provenance, editable requirement authoring with version history, explainable quality status, canonical SysML/UML/SoSE profile views, an accessible trace graph alternative, verification matrix authoring, evidence attachment, auditable change-request application, baselines, local persistence, validated JSON project import/export, undo/redo, Mermaid/SVG/PNG export, CSV matrices, Markdown reports, printable HTML reports, and persisted dark/light themes.
+**stakeholder intent → elicitation → need → requirement → architecture → verification → evidence → change impact → baseline**
 
-The deterministic seed contains 25 stakeholders, 60 elicitation records, 100 needs, 260 requirements, 32 architecture elements, 180 verification cases, 170 evidence records, 50 risk/decision records, 10 constraints, 4 change requests, 4 review sessions, and more than 1,200 trace links. Two synthetic baselines are included.
+The repository ships with a deterministic synthetic **Emergency Response Drone** project so the complete workflow can be explored without an account, external service, or proprietary data.
 
-## Product vision and differentiators
+## What TraceGraph is
 
-TraceGraph makes engineering traceability a connected activity rather than a
-collection of disconnected forms. A user can start with an interview note,
-preserve its provenance, formalize a need into a measurable requirement, relate
-it to architecture, plan verification, inspect evidence, simulate change, and
-export the resulting digital thread.
+TraceGraph is an approachable engineering workbench, not a claim of certified enterprise MBSE capability. Guided and Engineering modes operate on the same canonical artifacts and relationships. SysML-, UML-, and SoSE-oriented views are practical projections over that model and are labeled as such rather than presented as standards-conformant editors.
 
-The product is deliberately positioned as an approachable, inspectable
-workbench rather than a replacement for certified enterprise MBSE tooling. Its
-distinctive choices are progressive formalization, one canonical model behind
-many views, explainable analysis, a SysML-oriented vocabulary without a
-notation barrier, native SoSE context, open exports, no-account onboarding, and
-reversible local-first interaction.
+The current vertical slice includes:
 
-## Main workflows
+- guided onboarding and a restartable workflow tour;
+- stakeholder discovery, elicitation records, source notes, and need review;
+- structured requirement authoring, quality findings, decomposition, metadata, and version history;
+- architecture allocation and profile-specific projections;
+- trace exploration, relationship evidence, coverage metrics, and accessible tabular alternatives;
+- verification planning, methods, cases, results, and evidence attachment;
+- explainable change-impact simulation before changes are applied;
+- named baselines and baseline comparison;
+- local persistence with IndexedDB and localStorage fallback;
+- validated, size-limited JSON import/export;
+- constrained Mermaid proposal parsing plus SVG, PNG, CSV, Markdown, and printable HTML exports;
+- undo/redo and bounded local audit history.
 
-- Guided onboarding through the Emergency Response Drone sample.
-- Stakeholder discovery, elicitation capture, candidate-need review, and
-  provenance-preserving need-to-requirement conversion.
-- Structured requirement authoring, quality findings, decomposition, metadata,
-  version comparison, and canonical relationship editing.
-- SysML-oriented requirements, block, internal-block, activity, sequence, state,
-  context, allocation, and verification views.
-- UML use-case, class, component, deployment, sequence, and state projections
-  over the same metamodel.
-- SoSE mission-thread, constituent-system, capability-allocation,
-  operational-dependency, and interoperability views.
-- Trace exploration, matrix authoring, coverage metrics, verification methods,
-  test cases, evidence attachment, impact simulation, and baseline comparison.
+## First five minutes
+
+The interface keeps the full digital thread visible in a persistent workflow rail. The case-study chrome also keeps three boundaries explicit throughout the demo:
+
+- **Synthetic demo**: seeded records are deterministic examples, not operational data.
+- **Local-first**: the guest workbench has no remote project data plane.
+- **Canonical model**: views are projections over shared artifacts and relationships.
+
+Start with **Open sample project** or **Explore sample**, then use **Start five-minute tour** or **Restart guided workflow** to follow the end-to-end thread.
+
+## Synthetic sample
+
+The Emergency Response Drone seed contains a deliberately rich engineering graph: hundreds of requirements, stakeholders, elicitation records, architecture elements, verification cases, evidence records, risks/decisions, review sessions, change requests, and more than 1,000 canonical relationships. Unit tests validate the important seed invariants rather than relying on narrative counts.
+
+Additional synthetic medical-device and cloud-resilience samples remain available for comparison, but the Emergency Response Drone project is the canonical case-study path.
+
+## Architecture boundaries
+
+- `src/model.ts` owns canonical artifact and relationship types, validation, diagnostics, quality analysis, coverage metrics, impact analysis, comparison, and deterministic exports.
+- `src/repository.ts` owns browser persistence behind the repository abstraction.
+- `src/profiles.ts` defines Core TraceGraph, SysML, UML, SoSE, and Custom view projections.
+- `src/App.tsx` composes the workbench over those boundaries.
+- `src/CaseStudyChrome.tsx` adds case-study navigation and product framing without introducing a second engineering model.
+
+Relationship records retain stable IDs and can carry direction, rationale, confidence, provenance, review, baseline, inference, and audit metadata. Diagram perspectives reference canonical artifacts instead of becoming independent sources of truth.
 
 ## Modeling scope
 
-The canonical model is shared by Core TraceGraph, SysML, UML, SoSE, and Custom
-profiles. The current modeling views are practical, clearly labeled
-projections, not claims of formal SysML or UML conformance. Relationships retain
-stable IDs, endpoint validation, rationale, confidence, provenance, review, and
-baseline metadata. Diagram elements remain references to canonical artifacts.
+TraceGraph deliberately avoids claiming standards-complete SysML, UML, or SoSE authoring. Current profile views are inspectable practical projections intended to make the shared engineering model easier to navigate. Full standards semantics, richer diagram authoring, and enterprise collaboration remain roadmap work.
 
-## Technology stack
+## Local-first persistence and import safety
 
-TraceGraph is a Vite, React, and TypeScript application with Vitest,
-Playwright, axe-core, Prettier, and Oxlint. Persistence is isolated behind a
-browser repository using IndexedDB with a localStorage fallback. The current
-application is a local-first modular monolith; a server adapter is intentionally
-not included in the guest demo.
+Project content is persisted through `BrowserProjectRepository` using IndexedDB with a localStorage fallback. The guest application has no server-backed project repository. Imported JSON bundles are limited to 5 MB and validated before replacement. Artifact IDs, relationship endpoints, history, baselines, and diagram perspectives are checked before imported content becomes canonical project data.
 
-## Screenshots
+Mermaid input is treated as plain-text relationship proposals. Supported relationships are previewed and explicitly accepted; unsupported syntax is reported instead of executed or injected into the model.
 
-![TraceGraph landing experience](docs/screenshots/tracegraph-landing.png)
+## Case-study evidence
 
-![TraceGraph workbench](docs/screenshots/tracegraph-workbench.png)
+The repository contains a deterministic Playwright screenshot flow covering:
+
+1. landing page;
+2. guided tour;
+3. requirement authoring;
+4. trace graph;
+5. verification matrix;
+6. impact analysis;
+7. baseline comparison;
+8. exports.
+
+`npm run test:e2e` generates the current case-study captures under `docs/screenshots/case-study-*.png`. CI retains those images as the `tracegraph-case-study-screenshots` artifact.
+
+The narrative case study is in [`docs/case-study.md`](docs/case-study.md), with a short reproducible walkthrough in [`docs/demo-script.md`](docs/demo-script.md).
+
+## Accessibility
+
+The interface provides semantic form controls, keyboard focus treatment, text/table alternatives for visual graph content, reduced-motion behavior, persisted light/dark themes, and non-drag controls for important relationships. Playwright and axe scan the landing page and major workflow surfaces for critical and serious violations.
+
+This is an accessibility engineering baseline, not a WCAG certification or screen-reader conformance claim. See [`docs/accessibility.md`](docs/accessibility.md).
 
 ## Quick start
 
@@ -68,59 +93,35 @@ npm install
 npm run dev
 ```
 
-Checks: `npm run format:check`, `npm run lint`, `npm run typecheck`, `npm run test`, `npm run test:e2e`, `npm run test:accessibility`, and `npm run build`.
+## Verification
 
-## Local development
+The repository defines the following validation sequence:
 
-Use `npm run dev` for the development server or `npm run build` followed by
-`npm run preview` to inspect the production bundle. Browser project data is
-stored locally; no environment variables are required for the demo. The
-sanitized `.env.example` is retained for future deployment adapters.
+```bash
+npm run format:check
+npm run lint
+npm run typecheck
+npm run test
+npm run test:e2e
+npm run test:accessibility
+npm run build
+```
 
-Project content is persisted through a browser repository using IndexedDB with a localStorage migration/fallback, a versioned local bundle, and bounded audit history. Mermaid source, CSV matrices, Markdown, printable HTML, SVG, PNG, and JSON are open and portable. Server-backed persistence is intentionally outside the guest experience.
+GitHub Actions runs that same sequence on pushes and pull requests. Build sizes and test timings should be treated as observations from a specific run, not product performance benchmarks.
 
 ## Export formats
 
-The export surface includes Mermaid source and fenced Markdown, clipboard copy,
-SVG, bounded 1x/2x/3x/4x PNG, CSV requirements, CSV traceability, CSV
-verification, Markdown reports, printable HTML, JSON project bundles, and
-selected Diagram Studio perspectives. Large graphs retain lossless full-content
-SVG export while browser-safe raster bounds protect PNG generation.
+TraceGraph supports Mermaid source and fenced Markdown, SVG, bounded PNG raster export, CSV requirements/traceability/verification matrices, Markdown reports, printable HTML reports, JSON project bundles, and selected Diagram Studio perspectives.
 
-## Architecture
+## Known limitations
 
-`src/model.ts` owns canonical artifact and relationship types plus deterministic Mermaid, CSV, Markdown, HTML, and SVG generation. `src/profiles.ts` defines the SysML, UML, SoSE, Core TraceGraph, and Custom vocabulary/view projections. `src/App.tsx` composes workflow views over that model; `src/repository.ts` isolates IndexedDB persistence and the localStorage fallback.
-
-## Accessibility and privacy
-
-The interface provides keyboard-focus styling, semantic labels, table and text alternatives for graph views, and does not transmit project content. This is an MVP accessibility baseline, not a claim of certification.
-
-## Testing
-
-The unit suite covers canonical model validation, relationships, metrics,
-diagnostics, serialization, and exports. The critical Playwright workflow
-covers elicitation through recovery and export; the accessibility workflow
-runs axe checks against the landing page and workbench. The long critical
-workflow has a 60-second workflow budget; that is not a product performance
-claim.
-
-## Limitations
-
-The supplied logo asset was not present in the repository or referenced attachments. The current CSS mark and `public/brand/tracegraph-fallback-*` assets are deterministic fallbacks, not the final brand asset; replace them with the owner-provided source before public launch. Full diagram authoring, standards-complete SysML/UML/SoSE editors, and server-backed collaboration remain planned.
-
-## Roadmap
-
-Next priorities are import conflict resolution beyond replacement review,
-diagram versioning, richer standards semantics, virtualized large-model tables,
-export progress/cancellation, a server-backed repository adapter, and the
-owner-provided brand assets.
+- The included TraceGraph mark is a deterministic fallback, not an owner-provided final brand asset.
+- Full standards-complete SysML/UML/SoSE semantics are not implemented.
+- Server collaboration and a remote repository adapter are not part of the guest demo.
+- Large-model table virtualization and a repeatable performance benchmark remain roadmap items.
+- PNG export is intentionally bounded for browser safety; SVG remains the lossless graph export.
+- No license file is currently present; the repository owner should select a license before broad redistribution.
 
 ## Contributing and security
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for branch and validation conventions.
-Report security concerns privately according to [SECURITY.md](SECURITY.md);
-do not place sensitive operational data in the public synthetic demo.
-
-## License
-
-No license file was present at project creation. Licensing should be selected by the repository owner before public distribution.
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) for development conventions. Report security concerns according to [`SECURITY.md`](SECURITY.md). Do not import sensitive operational information into a public demo environment.
