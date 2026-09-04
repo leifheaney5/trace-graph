@@ -5,7 +5,7 @@ test("engineer can inspect impact, query the thread, and accept an elicitation c
 }) => {
   await page.goto("/");
   await page
-    .getByRole("button", { name: "Engineering intelligence", exact: true })
+    .getByRole("button", { name: "Thread intelligence", exact: true })
     .click();
   const dialog = page.getByRole("dialog", {
     name: "Engineering intelligence workbench",
@@ -14,6 +14,9 @@ test("engineer can inspect impact, query the thread, and accept an elicitation c
   await expect(
     dialog.getByText(/zero are canonical automatically/i),
   ).toBeVisible();
+  await page.screenshot({
+    path: "docs/screenshots/case-study-intelligence-overview.png",
+  });
 
   await dialog.getByRole("button", { name: "Impact", exact: true }).click();
   await expect(
@@ -25,6 +28,9 @@ test("engineer can inspect impact, query the thread, and accept an elicitation c
     dialog.getByText("Evidence at risk", { exact: true }),
   ).toBeVisible();
   await expect(dialog.getByText(/verified-by/).first()).toBeVisible();
+  await page.screenshot({
+    path: "docs/screenshots/case-study-intelligence-impact.png",
+  });
 
   await dialog.getByRole("button", { name: "Trace queries" }).click();
   await dialog
@@ -33,12 +39,18 @@ test("engineer can inspect impact, query the thread, and accept an elicitation c
   await expect(
     dialog.getByText(/directed paths found from REQ-042 to EVD-017/i),
   ).toBeVisible();
+  await page.screenshot({
+    path: "docs/screenshots/case-study-intelligence-query.png",
+  });
 
   await dialog.getByRole("button", { name: "Evidence validity" }).click();
   await expect(
     dialog.getByRole("heading", { name: "Existence is not validity" }),
   ).toBeVisible();
   await expect(dialog.getByRole("table")).toBeVisible();
+  await page.screenshot({
+    path: "docs/screenshots/case-study-intelligence-evidence.png",
+  });
 
   await dialog
     .getByRole("button", { name: "Elicitation", exact: true })
@@ -49,6 +61,9 @@ test("engineer can inspect impact, query the thread, and accept an elicitation c
   await expect(
     dialog.getByText("SUGGESTED · NOT CANONICAL").first(),
   ).toBeVisible();
+  await page.screenshot({
+    path: "docs/screenshots/case-study-intelligence-elicitation.png",
+  });
   await dialog
     .getByRole("button", { name: "Accept into canonical thread" })
     .first()
