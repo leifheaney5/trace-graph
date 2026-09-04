@@ -3,7 +3,7 @@ import { expect, test, type Page } from "@playwright/test";
 const screenshot = async (page: Page, name: string) => {
   await page.screenshot({
     path: `docs/screenshots/case-study-${name}.png`,
-    fullPage: true,
+    fullPage: false,
   });
 };
 
@@ -21,15 +21,22 @@ test("capture case-study evidence from deterministic sample data", async ({
   ).toBeVisible();
   await screenshot(page, "landing");
 
-  await page.getByRole("button", { name: "Start five-minute tour" }).click();
+  await page
+    .getByRole("button", { name: "Restart guided workflow" })
+    .click();
   await expect(
-    page.getByRole("dialog", { name: /Open a stakeholder need/i }),
+    page.getByRole("dialog", { name: /Start with stakeholder intent/i }),
   ).toBeVisible();
   await screenshot(page, "guided-tour");
-  await page.getByRole("button", { name: "Dismiss guided tour" }).click();
+  await page
+    .getByRole("button", { name: "Dismiss digital-thread tour" })
+    .click();
 
   await page.goto("/");
-  await page.getByRole("button", { name: "Open sample project" }).click();
+  await page.getByRole("button", { name: "Explore sample" }).click();
+  await expect(
+    page.getByRole("heading", { name: /From stakeholder need to verified evidence/i }),
+  ).toBeVisible();
 
   await primaryNav(page)
     .getByRole("button", { name: /Requirements/ })
@@ -37,7 +44,9 @@ test("capture case-study evidence from deterministic sample data", async ({
   await page
     .getByRole("button", { name: "REQ-042 Mission telemetry availability" })
     .click();
-  await expect(page.getByLabel("Requirement statement")).toBeVisible();
+  const statement = page.getByLabel("Requirement statement");
+  await expect(statement).toBeVisible();
+  await statement.scrollIntoViewIfNeeded();
   await screenshot(page, "requirement-authoring");
 
   await primaryNav(page)
@@ -51,24 +60,30 @@ test("capture case-study evidence from deterministic sample data", async ({
   await primaryNav(page)
     .getByRole("button", { name: /Verification/ })
     .click();
-  await expect(
-    page.getByRole("heading", { name: "Requirement to evidence" }),
-  ).toBeVisible();
+  const verificationHeading = page.getByRole("heading", {
+    name: "Requirement to evidence",
+  });
+  await expect(verificationHeading).toBeVisible();
+  await verificationHeading.scrollIntoViewIfNeeded();
   await screenshot(page, "verification-matrix");
 
   await primaryNav(page)
     .getByRole("button", { name: /Impact/ })
     .click();
   await page.getByRole("button", { name: "Run impact simulation" }).click();
-  await expect(page.getByText("Potentially affected artifacts")).toBeVisible();
+  const impactEvidence = page.getByText("Potentially affected artifacts");
+  await expect(impactEvidence).toBeVisible();
+  await impactEvidence.scrollIntoViewIfNeeded();
   await screenshot(page, "impact-analysis");
 
   await primaryNav(page)
     .getByRole("button", { name: /Baselines/ })
     .click();
-  await expect(
-    page.getByRole("heading", { name: "Compare baselines" }),
-  ).toBeVisible();
+  const baselineHeading = page.getByRole("heading", {
+    name: "Compare baselines",
+  });
+  await expect(baselineHeading).toBeVisible();
+  await baselineHeading.scrollIntoViewIfNeeded();
   await screenshot(page, "baseline-comparison");
 
   await primaryNav(page)
