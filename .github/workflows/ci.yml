@@ -17,23 +17,84 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
-      - name: Format v2 files
-        run: npx prettier --write src/digitalThread.ts src/DigitalThreadWorkbench.tsx src/digital-thread-workbench.css src/digitalThread.test.ts src/main.tsx tests/e2e/accessibility.spec.ts tests/e2e/digital-thread-workbench.spec.ts
-      - name: Commit deterministic formatting
+      - name: Apply deterministic v2 integration repairs
         run: |
-          if ! git diff --quiet -- src/digitalThread.ts src/DigitalThreadWorkbench.tsx src/digital-thread-workbench.css src/digitalThread.test.ts src/main.tsx tests/e2e/accessibility.spec.ts tests/e2e/digital-thread-workbench.spec.ts; then
+          node <<'NODE'
+          const fs = require("node:fs");
+
+          const workbenchPath = "src/DigitalThreadWorkbench.tsx";
+          let workbench = fs.readFileSync(workbenchPath, "utf8");
+          workbench = workbench.replace(
+            /(className="dt-launcher"[\s\S]*?>[\s\S]*?)Engineering intelligence([\s\S]*?<\/button>)/,
+            "$1Thread intelligence$2",
+          );
+          workbench = workbench.replace(
+            '<main className="dt-content">',
+            '<main className="dt-content" tabIndex={0} aria-label="Engineering intelligence content">',
+          );
+          workbench = workbench.replace(
+            '<div className="dt-table-wrap">',
+            '<div className="dt-table-wrap" tabIndex={0} role="region" aria-label="Evidence validity table">',
+          );
+
+          if (!workbench.includes("const lifecycleArtifacts = useMemo")) {
+            const requirementBlock = `  const requirements = useMemo(\n    () =>\n      bundle.artifacts.filter((artifact) => artifact.type === "Requirement"),\n    [bundle.artifacts],\n  );`;
+            const lifecycleBlock = `${requirementBlock}\n  const lifecycleArtifacts = useMemo(\n    () =>\n      bundle.artifacts.filter((artifact) =>\n        ["Requirement", "ChangeRequest"].includes(artifact.type),\n      ),\n    [bundle.artifacts],\n  );`;
+            if (!workbench.includes(requirementBlock)) {
+              throw new Error("Could not locate requirement memo for lifecycle extension.");
+            }
+            workbench = workbench.replace(requirementBlock, lifecycleBlock);
+          }
+          workbench = workbench.replace(
+            `  const selectedLifecycleArtifact =\n    requirements.find((artifact) => artifact.id === lifecycleId) ||\n    requirements[0];`,
+            `  const selectedLifecycleArtifact =\n    lifecycleArtifacts.find((artifact) => artifact.id === lifecycleId) ||\n    lifecycleArtifacts[0];`,
+          );
+          workbench = workbench.replace(
+            /(<select\s+value=\{lifecycleId\}[\s\S]*?>[\s\S]*?)\{requirements\.map\(/,
+            "$1{lifecycleArtifacts.map(",
+          );
+          workbench = workbench.replace(
+            `                  <label>\n                    Requirement\n                    <select\n                      value={lifecycleId}`,
+            `                  <label>\n                    Requirement or change request\n                    <select\n                      value={lifecycleId}`,
+          );
+          fs.writeFileSync(workbenchPath, workbench);
+
+          const criticalPath = "tests/e2e/critical-workflow.spec.ts";
+          let critical = fs.readFileSync(criticalPath, "utf8");
+          critical = critical.replace(
+            'page.getByRole("button", { name: "Engineering" }).click();',
+            'page.getByRole("button", { name: "Engineering", exact: true }).click();',
+          );
+          fs.writeFileSync(criticalPath, critical);
+          NODE
+      - name: Format v2 integration files
+        run: npx prettier --write src/DigitalThreadWorkbench.tsx tests/e2e/digital-thread-workbench.spec.ts tests/e2e/critical-workflow.spec.ts
+      - name: Commit deterministic v2 repairs
+        run: |
+          if ! git diff --quiet -- src/DigitalThreadWorkbench.tsx tests/e2e/digital-thread-workbench.spec.ts tests/e2e/critical-workflow.spec.ts; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add src/digitalThread.ts src/DigitalThreadWorkbench.tsx src/digital-thread-workbench.css src/digitalThread.test.ts src/main.tsx tests/e2e/accessibility.spec.ts tests/e2e/digital-thread-workbench.spec.ts
-            git commit -m "style: format digital-thread v2 files [skip ci]"
+            git add src/DigitalThreadWorkbench.tsx tests/e2e/digital-thread-workbench.spec.ts tests/e2e/critical-workflow.spec.ts
+            git commit -m "fix: harden digital-thread browser integration [skip ci]"
             git push
           fi
+      - name: Inspect dependency audit
+        run: npm audit --json || true
       - run: npx playwright install --with-deps chromium
       - run: npm run format:check
       - run: npm run lint
       - run: npm run typecheck
       - run: npm run test
       - run: npm run test:e2e
+      - name: Commit v2 case-study screenshots
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/screenshots/case-study-intelligence-*.png
+          if ! git diff --cached --quiet; then
+            git commit -m "docs: add digital-thread intelligence screenshots [skip ci]"
+            git push
+          fi
       - run: npm run test:accessibility
       - run: npm run build
       - name: Upload case-study screenshots
