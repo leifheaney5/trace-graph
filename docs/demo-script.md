@@ -72,16 +72,87 @@ Expected result: baseline state is a frozen, named engineering configuration wit
 
 Expected result: exports are generated from canonical project data. Mermaid import remains a constrained proposal flow rather than executable model input.
 
+## 9. Open the engineering-intelligence workbench
+
+1. Select **Thread intelligence**.
+2. Confirm the header still shows **Synthetic demo** and **Local-first**.
+3. On **Thread health**, compare approved requirements, verification linkage, evidence validity, stored baselines, quality findings, and assistant suggestions.
+
+Expected result: each engineering signal has its own count or numerator/denominator. There is no combined opaque readiness score.
+
+## 10. Inspect explainable change impact
+
+1. Select **Impact** in the intelligence workbench.
+2. Choose `REQ-042` as the root artifact.
+3. Review direct and transitive counts separately.
+4. Inspect a path into verification or evidence.
+5. Read the relationship kind, rationale, confidence, and provenance shown for each edge.
+
+Expected result: TraceGraph explains why an artifact is considered affected rather than returning an unexplained impact score.
+
+## 11. Run deterministic trace queries
+
+1. Select **Trace queries**.
+2. Run **show every path from REQ-042 to EVD-017**.
+3. Try another preset such as requirements without verification evidence or stale evidence.
+4. Enter an unsupported question if desired.
+
+Expected result: supported questions are translated into deterministic graph operations. Unsupported questions are explicitly rejected instead of being answered speculatively.
+
+## 12. Review evidence validity
+
+1. Select **Evidence validity**.
+2. Inspect the states: valid, stale, review-needed, incomplete, and superseded.
+3. Read the linked requirement/test lineage, baseline reference, and reason column.
+
+Expected result: connected evidence is not automatically treated as current or reusable. Structural freshness and provenance remain inspectable.
+
+## 13. Review elicitation suggestions
+
+1. Select **Elicitation** in Thread intelligence.
+2. Use the provided synthetic source excerpt or enter another deterministic note.
+3. Select **Extract candidate engineering records**.
+4. Confirm every item is labeled **SUGGESTED · NOT CANONICAL**.
+5. Accept one candidate if demonstrating the write path.
+6. Select **Apply & return to core views**.
+
+Expected result: the candidate enters the canonical repository only after explicit acceptance, and the core workbench reloads from that repository.
+
+## 14. Review controlled lifecycle and change management
+
+1. Reopen **Thread intelligence** and select **Change & baselines**.
+2. Select a requirement or change request.
+3. Review its lifecycle state, review disposition, and canonical version history separately.
+4. Record a review decision or move through an allowed lifecycle transition.
+5. Create a change request from explainable impact.
+6. Create a version-aware baseline snapshot.
+
+Expected result: lifecycle, approval, change rationale, affected artifacts, and baseline membership remain separate inspectable records.
+
+## 15. Review assistant suggestions
+
+1. Select **Assistant suggestions**.
+2. Inspect proposed requirement rewrites, verification planning, evidence refresh, or conflict-review prompts.
+3. Read each proposal's rationale and limitation.
+
+Expected result: the assistant layer remains a proposal layer. It cannot silently mutate canonical artifacts.
+
 ## Restart the guided path
 
 Select **Restart digital-thread tour** at any point. The restart control reuses the built-in guided tour and does not create a second project model.
 
 ## Reproduce the case-study screenshots
 
-Run:
+Run the full browser suite:
 
 ```bash
-npm run test:e2e -- tests/e2e/case-study-screenshots.spec.ts
+npm run test:e2e
 ```
 
-The test writes the eight deterministic `docs/screenshots/case-study-*.png` captures used for the portfolio evidence flow.
+The original case-study flow writes eight deterministic captures. The engineering-intelligence flow writes five additional captures, for 13 `docs/screenshots/case-study-*.png` images in total.
+
+To run only the deeper intelligence flow:
+
+```bash
+npx playwright test tests/e2e/digital-thread-workbench.spec.ts
+```

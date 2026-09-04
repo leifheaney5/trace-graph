@@ -13,11 +13,12 @@ Requirements work often fragments stakeholder notes, requirements, architecture 
 - Where did this requirement come from?
 - What does it allocate to?
 - How will it be verified?
-- What evidence supports it?
+- Is the evidence still valid for the current requirement version?
 - What changes if the statement changes?
+- Why is each downstream artifact considered affected?
 - Which baseline contains the reviewed state?
 
-TraceGraph treats those questions as views over one canonical model rather than separate records that must be reconciled manually.
+TraceGraph treats those questions as views and deterministic services over one canonical model rather than separate records that must be reconciled manually.
 
 ## Design principles
 
@@ -25,19 +26,25 @@ TraceGraph treats those questions as views over one canonical model rather than 
 
 Users can start from plain-language stakeholder material and move toward structured requirements without discarding the original provenance. Guided mode keeps prompts approachable; Engineering mode exposes denser controls. Both edit the same underlying artifacts.
 
+The engineering-intelligence workbench adds deterministic elicitation extraction. Suggested needs, concerns, assumptions, constraints, and requirements retain their source excerpt, confidence, and rationale. They remain explicitly **Suggested · not canonical** until a user accepts them.
+
 ### Canonical model first
 
-`src/model.ts` owns artifacts, relationships, validation, diagnostics, quality findings, coverage metrics, impact analysis, bundle validation, and deterministic exports. Views do not become independent engineering truth.
+`src/model.ts` owns the canonical artifact and relationship model, validation, diagnostics, quality findings, coverage metrics, comparison, and deterministic exports. Views do not become independent engineering truth.
+
+`src/digitalThread.ts` operates on those canonical bundles to provide lifecycle/version services, review records, evidence validity, explainable impact, constrained trace queries, structured elicitation, corpus quality analysis, change requests, baselines, and assistant suggestions.
 
 `src/profiles.ts` defines Core TraceGraph, SysML, UML, SoSE, and Custom projections. Those projections are explicitly practical subsets, not standards-conformance claims.
 
 ### Local-first and reversible
 
-`src/repository.ts` keeps browser persistence behind a repository abstraction using IndexedDB with a localStorage fallback. Important edits participate in local history and undo/redo behavior. The guest demo does not include a remote project data plane.
+`src/repository.ts` keeps browser persistence behind a repository abstraction using IndexedDB with a localStorage fallback. The Thread intelligence workbench uses that same abstraction. Accepted changes are persisted and then reloaded into the core workbench rather than being maintained in a separate model.
 
 ### Inspectability over decorative metrics
 
 Coverage and diagnostic metrics expose their definitions and the underlying canonical records. Relationship records can expose direction, rationale, confidence, provenance, review state, baseline context, and stable IDs. Synthetic/demo labels remain visible so portfolio evidence is not confused with operational deployment evidence.
+
+The deeper intelligence workbench also keeps lifecycle, verification, evidence validity, quality findings, and impact as separate signals rather than reducing them to one opaque readiness score.
 
 ## First-five-minute experience
 
@@ -61,9 +68,17 @@ The intended first session is:
 8. Compare the resulting engineering state against a baseline.
 9. Export the inspectable thread.
 
-## Requirement authoring
+The **Thread intelligence** control then exposes the deeper version-aware and query-oriented workflows without changing the canonical product boundary.
+
+## Requirement authoring and lifecycle
 
 The workbench supports structured requirement fields, free-text statements, decomposition, ownership, tags, rationale, quality findings, finding dispositions, and version history. Quality analysis is deterministic guidance with explainable rule identifiers and correction suggestions; it is not represented as standards certification.
+
+The deeper digital-thread services add normalized lifecycle states:
+
+**Draft → Proposed → In review → Approved → Superseded → Retired**
+
+Only allowed transitions are accepted. Each lifecycle transition records actor, rationale, timestamp, and a canonical `ArtifactVersion` snapshot. Review decisions are modeled separately through `ReviewSession` artifacts and `reviews` relationships so an approval record does not silently overwrite lifecycle history.
 
 ## Traceability and provenance
 
@@ -71,23 +86,77 @@ Trace Explorer lets the user inspect canonical relationships rather than merely 
 
 Relationship metadata is part of the engineering record. Stable relationship IDs plus rationale, confidence, provenance, review, and baseline metadata make important links reviewable instead of implicit.
 
+The deterministic trace-query layer translates a constrained set of engineering questions into graph operations. Supported examples include missing verification, unapproved needs, impact from a named artifact, tests that verify critical requirements, baseline differences, stale evidence, orphaned architecture, and directed paths between two artifact IDs. Unsupported phrasing returns an explicit unsupported result instead of a generated guess.
+
 ## Architecture projections
 
 Architecture, SysML-oriented, UML-oriented, and SoSE views remain projections over canonical artifact IDs. Diagram perspectives store view configuration and positions, but do not replace the source artifacts. Unsupported standards semantics are treated as roadmap scope instead of being implied by visual similarity.
 
-## Verification and evidence
+The deeper intelligence pass deliberately reuses those projections rather than creating another architecture model.
+
+## Verification and evidence validity
 
 Verification cases support multiple verification methods, procedures/results, owners, and evidence attachment. Requirement-to-verification coverage remains distinct from evidence completeness so users can see what each metric actually measures.
 
-## Change impact
+The version-aware evidence service goes further by distinguishing **evidence exists** from **evidence is reusable for the current engineering state**. For each evidence artifact it checks available canonical metadata for:
 
-Impact analysis evaluates direct and indirect relationship paths before a proposed change is applied. The user can inspect affected artifacts, quality consequences, allocations, verification implications, and relationship changes before creating or applying a change request.
+- a producing verification relationship;
+- reachable requirements through `verified-by` relationships;
+- evidence production time;
+- recorded requirement version;
+- the current canonical requirement version/history;
+- baseline or configuration reference;
+- reviewer/review state;
+- verified state;
+- supersession metadata.
 
-The analysis is explainable graph traversal over the current canonical model, not a prediction of organizational or business impact.
+The resulting states are **valid**, **stale**, **review-needed**, **incomplete**, or **superseded**. A stale result means the structural record indicates that a linked requirement changed or moved to a newer version after the evidence context was recorded. It does not claim that the physical test result itself has been scientifically invalidated without review.
 
-## Baselines
+## Explainable change impact
 
-Baselines preserve named snapshots of canonical artifacts and relationships with approval metadata. Comparison surfaces changed, added, and removed engineering records and link changes. A baseline is therefore an inspectable configuration state rather than a visual bookmark.
+Impact analysis follows directed canonical relationships and retains the relationship kind, rationale, confidence, and provenance for every edge in an explanation path.
+
+Signals stay separate:
+
+- direct impact;
+- transitive impact;
+- verification impact;
+- connected evidence;
+- already-stale evidence;
+- baseline divergence;
+- high-criticality artifacts;
+- unreviewed artifacts.
+
+For example, a change to a requirement can expose its architecture allocation, downstream verification case, evidence produced by that case, and whether those artifacts diverge from the latest stored baseline. The interface shows the actual relationship chain rather than presenting an unexplained impact score.
+
+This is structural engineering analysis. It is not a probabilistic safety score, business-impact prediction, or certification determination.
+
+## Change requests and baselines
+
+A canonical change request retains:
+
+- the originating artifact;
+- reason for change;
+- proposed change text;
+- explainably affected artifact IDs;
+- reviewer list;
+- target baseline context;
+- canonical relationships from the change request back to its justification and affected artifacts.
+
+Change requests can move through the same controlled lifecycle service as requirements while review decisions remain separate records.
+
+Version-aware baselines snapshot canonical artifacts, relationships, artifact-version history, relation history, project metadata, approver, and approval time. Baseline membership can therefore identify the artifact version represented in the stored configuration. Comparison surfaces added, removed, and changed artifacts and relationships.
+
+## Assistant boundary
+
+The current assistant layer is deterministic and local. It can suggest:
+
+- structured requirement rewrites when existing quality rules and fields support one;
+- verification planning when a requirement has no `verified-by` relationship;
+- evidence refresh/review when canonical version history makes evidence stale;
+- review prompts around deterministic conflict diagnostics.
+
+Every proposal displays its rationale and limitation. Suggestions do not mutate the canonical bundle. A future LLM provider could produce the same typed suggestion objects, but that would introduce a new data-handling and trust boundary and would still require explicit acceptance before canonical change.
 
 ## Import, export, and Mermaid safety
 
@@ -99,13 +168,13 @@ Exports include JSON bundles, CSV matrices, Mermaid, SVG, bounded PNG, Markdown,
 
 ## Accessibility
 
-The UI uses semantic controls, keyboard focus states, accessible graph alternatives, reduced-motion behavior, and persisted light/dark themes. Automated axe checks cover the landing page and major workflow stages.
+The UI uses semantic controls, keyboard focus states, accessible graph alternatives, reduced-motion behavior, and persisted light/dark themes. Dense scrollable intelligence regions are keyboard focusable and named. Automated axe checks cover the landing page, major core workflow stages, and the intelligence overview, impact, query, evidence, and elicitation surfaces.
 
 This is an engineering baseline, not a WCAG certification or a claim of complete assistive-technology conformance.
 
 ## Reproducible visual evidence
 
-`tests/e2e/case-study-screenshots.spec.ts` generates eight deterministic case-study captures:
+The original deterministic case-study flow generates:
 
 - `case-study-landing.png`
 - `case-study-guided-tour.png`
@@ -116,7 +185,15 @@ This is an engineering baseline, not a WCAG certification or a claim of complete
 - `case-study-baseline-comparison.png`
 - `case-study-exports.png`
 
-CI retains the generated images as the `tracegraph-case-study-screenshots` artifact. This keeps visual evidence tied to a reproducible browser flow instead of a manually staged dashboard.
+The deeper engineering-intelligence flow adds:
+
+- `case-study-intelligence-overview.png`
+- `case-study-intelligence-impact.png`
+- `case-study-intelligence-query.png`
+- `case-study-intelligence-evidence.png`
+- `case-study-intelligence-elicitation.png`
+
+CI retains all 13 generated images as the `tracegraph-case-study-screenshots` artifact. The evidence is tied to reproducible browser flows instead of manually staged dashboards.
 
 ## Verification evidence policy
 
@@ -132,7 +209,7 @@ npm run test:accessibility
 npm run build
 ```
 
-Build size, test duration, and browser timing observations belong to the specific run that produced them. They are not claims of cross-device performance, uptime, productivity improvement, or enterprise scale.
+Dependency audit is also checked in CI. Build size, test duration, and browser timing observations belong to the specific run that produced them. They are not claims of cross-device performance, uptime, productivity improvement, or enterprise scale.
 
 ## What the case study demonstrates
 
@@ -140,13 +217,16 @@ The evidence for TraceGraph is the runnable deterministic workflow itself:
 
 - a synthetic but non-trivial canonical model;
 - provenance-preserving elicitation and requirement authoring;
+- lifecycle history and separate review records;
 - inspectable relationships and coverage;
 - architecture projections over shared IDs;
-- verification and evidence handling;
+- verification and version-aware evidence handling;
 - explainable change analysis;
-- baseline comparison;
+- deterministic structural queries;
+- version-aware change requests and baseline comparison;
+- a non-canonical assistant/suggestion layer;
 - portable exports;
-- automated unit, end-to-end, accessibility, and build validation;
+- automated unit, end-to-end, accessibility, audit, and build validation;
 - reproducible screenshots.
 
 It does **not** claim customer deployment, revenue, certification, compliance, uptime, measured productivity gains, or standards-complete MBSE behavior.
@@ -155,6 +235,9 @@ It does **not** claim customer deployment, revenue, certification, compliance, u
 
 - Full standards-complete SysML/UML/SoSE semantics are not implemented.
 - Server-backed collaboration is outside the guest demo.
+- The assistant is currently a deterministic local suggestion layer rather than a configured external model provider.
+- Evidence validity is structural freshness/provenance analysis, not cryptographic or laboratory attestation.
+- Duplicate/conflict heuristics are review aids and do not prove semantic equivalence or contradiction.
 - Large-model table virtualization is still roadmap work.
 - A repeatable cross-device performance benchmark is not yet implemented.
 - The current brand mark is a deterministic fallback rather than an owner-provided final asset.
@@ -162,4 +245,4 @@ It does **not** claim customer deployment, revenue, certification, compliance, u
 
 ## Reproduce the demo
 
-See [`demo-script.md`](demo-script.md) for the short walkthrough and [`accessibility.md`](accessibility.md) plus [`security-threat-model.md`](security-threat-model.md) for explicit engineering boundaries.
+See [`demo-script.md`](demo-script.md) for the short walkthrough, [`digital-thread-v2.md`](digital-thread-v2.md) for detailed semantics, and [`accessibility.md`](accessibility.md) plus [`security-threat-model.md`](security-threat-model.md) for explicit engineering boundaries.

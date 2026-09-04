@@ -1,13 +1,12 @@
 name: CI
 on:
   push:
+  pull_request:
 concurrency:
   group: tracegraph-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-permissions:
-  contents: write
 jobs:
-  dependency-repair:
+  check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -16,20 +15,28 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
-      - name: Trace vulnerable transitive packages
-        run: npm ls nanoid postcss || true
-      - name: Update only identified transitive packages within parent ranges
-        run: npm update nanoid postcss --package-lock-only --ignore-scripts
-      - name: Verify repaired lockfile installs cleanly
-        run: npm ci
-      - name: Verify dependency audit
-        run: npm audit --json
-      - name: Commit repaired lockfile
-        run: |
-          if ! git diff --quiet -- package-lock.json; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add package-lock.json
-            git commit -m "chore: update vulnerable transitive dependencies [skip ci]"
-            git push
-          fi
+      - run: npm audit --audit-level=moderate
+      - run: npx playwright install --with-deps chromium
+      - run: npm run format:check
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run test
+      - run: npm run test:e2e
+      - run: npm run test:accessibility
+      - run: npm run build
+      - name: Upload case-study screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tracegraph-case-study-screenshots
+          path: docs/screenshots/case-study-*.png
+          if-no-files-found: warn
+      - name: Upload Playwright artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-artifacts
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: ignore
