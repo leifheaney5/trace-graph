@@ -19,15 +19,19 @@ TraceGraph connects the engineering chain from stakeholder intent through requir
 ## Audience-specific framing
 
 ### Systems / requirements engineer
+
 "See the complete provenance and downstream consequences of a requirement without reconstructing the thread manually."
 
 ### Verification engineer
+
 "Connect verification cases and evidence to the exact requirement version they support, then see when that support becomes stale."
 
 ### Technical lead
+
 "Review change impact and baseline divergence with the relationship path and supporting engineering context visible."
 
 ### Portfolio / case-study reviewer
+
 "Explore a deterministic, inspectable digital-engineering workflow without proprietary data or external services."
 
 ## Proof available in the repository

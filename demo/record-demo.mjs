@@ -53,40 +53,60 @@ try {
 
   await page.getByRole("button", { name: "Explore sample" }).click();
   await page
-    .getByRole("heading", { name: /From stakeholder need to verified evidence/i })
+    .getByRole("heading", {
+      name: /From stakeholder need to verified evidence/i,
+    })
     .waitFor();
   await setCaption("Emergency Response Drone · one canonical digital thread");
   await hold(2200);
 
-  await nav().getByRole("button", { name: /Requirements/ }).click();
+  await nav()
+    .getByRole("button", { name: /Requirements/ })
+    .click();
   await page
     .getByRole("button", { name: "REQ-042 Mission telemetry availability" })
     .click();
   await page.getByLabel("Requirement statement").waitFor();
   await page.getByLabel("Requirement statement").scrollIntoViewIfNeeded();
-  await setCaption("Requirement · provenance, quality, lifecycle, version context");
+  await setCaption(
+    "Requirement · provenance, quality, lifecycle, version context",
+  );
   await hold(2500);
 
-  await nav().getByRole("button", { name: /Traceability/ }).click();
+  await nav()
+    .getByRole("button", { name: /Traceability/ })
+    .click();
   await page.getByRole("heading", { name: /digital thread/i }).waitFor();
   await setCaption("Traceability · canonical relationships stay inspectable");
   await hold(2500);
 
-  await nav().getByRole("button", { name: /Verification/ }).click();
-  const verificationHeading = page.getByRole("heading", { name: "Requirement to evidence" });
+  await nav()
+    .getByRole("button", { name: /Verification/ })
+    .click();
+  const verificationHeading = page.getByRole("heading", {
+    name: "Requirement to evidence",
+  });
   await verificationHeading.waitFor();
   await verificationHeading.scrollIntoViewIfNeeded();
   await setCaption("Verification · requirement-to-evidence chain");
   await hold(2500);
 
-  await nav().getByRole("button", { name: /Impact/ }).click();
+  await nav()
+    .getByRole("button", { name: /Impact/ })
+    .click();
   await page.getByRole("button", { name: "Run impact simulation" }).click();
   await page.getByText("Potentially affected artifacts").waitFor();
-  await setCaption("Change impact · inspect consequences before applying change");
+  await setCaption(
+    "Change impact · inspect consequences before applying change",
+  );
   await hold(2500);
 
-  await page.getByRole("button", { name: "Thread intelligence", exact: true }).click();
-  const dialog = page.getByRole("dialog", { name: "Engineering intelligence workbench" });
+  await page
+    .getByRole("button", { name: "Thread intelligence", exact: true })
+    .click();
+  const dialog = page.getByRole("dialog", {
+    name: "Engineering intelligence workbench",
+  });
   await dialog.waitFor();
   await setCaption("Thread intelligence · deeper engineering evidence");
   await hold(1800);
@@ -95,28 +115,42 @@ try {
   await dialog
     .getByRole("heading", { name: /Follow the reason for every consequence/i })
     .waitFor();
-  await setCaption("Explainable impact · direction, rationale, confidence, provenance");
+  await setCaption(
+    "Explainable impact · direction, rationale, confidence, provenance",
+  );
   await hold(2500);
 
   await dialog.getByRole("button", { name: "Trace queries" }).click();
   await dialog
     .getByRole("button", { name: "show every path from REQ-042 to EVD-017" })
     .click();
-  await dialog.getByText(/directed paths found from REQ-042 to EVD-017/i).waitFor();
-  await setCaption("Deterministic trace query · unsupported questions are refused");
+  await dialog
+    .getByText(/directed paths found from REQ-042 to EVD-017/i)
+    .waitFor();
+  await setCaption(
+    "Deterministic trace query · unsupported questions are refused",
+  );
   await hold(2500);
 
   await dialog.getByRole("button", { name: "Evidence validity" }).click();
-  await dialog.getByRole("heading", { name: "Existence is not validity" }).waitFor();
-  await setCaption("Evidence validity · valid, stale, review-needed, incomplete, superseded");
+  await dialog
+    .getByRole("heading", { name: "Existence is not validity" })
+    .waitFor();
+  await setCaption(
+    "Evidence validity · valid, stale, review-needed, incomplete, superseded",
+  );
   await hold(2500);
 
-  await dialog.getByRole("button", { name: "Elicitation", exact: true }).click();
+  await dialog
+    .getByRole("button", { name: "Elicitation", exact: true })
+    .click();
   await dialog
     .getByRole("button", { name: "Extract candidate engineering records" })
     .click();
   await dialog.getByText("SUGGESTED · NOT CANONICAL").first().waitFor();
-  await setCaption("Elicitation · suggestions remain non-canonical until accepted");
+  await setCaption(
+    "Elicitation · suggestions remain non-canonical until accepted",
+  );
   await hold(3000);
 
   await setCaption("TraceGraph · make the digital thread inspectable");
@@ -132,5 +166,6 @@ try {
 }
 
 const stats = await fs.stat(outputPath);
-if (stats.size < 100_000) throw new Error(`Demo video is unexpectedly small: ${stats.size} bytes`);
+if (stats.size < 100_000)
+  throw new Error(`Demo video is unexpectedly small: ${stats.size} bytes`);
 console.log(`Saved ${outputPath} (${stats.size} bytes)`);
