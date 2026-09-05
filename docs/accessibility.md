@@ -13,9 +13,12 @@ The application includes:
 - persisted light and dark themes;
 - reduced-motion behavior;
 - high-contrast focus treatment;
-- deterministic workflow navigation that remains operable with the keyboard.
+- deterministic workflow navigation that remains operable with the keyboard;
+- named, keyboard-focusable regions for dense scrollable engineering content.
 
 The case-study workflow rail is exposed as a named navigation region and uses `aria-current` for the active workflow stage.
+
+The Thread intelligence experience is a named modal dialog. Its main scroll region and evidence-validity table region are focusable and labeled so keyboard users can move into and scroll dense content without relying on a pointer.
 
 ## Automated checks
 
@@ -27,7 +30,12 @@ The case-study workflow rail is exposed as a named navigation region and uses `a
 4. architecture;
 5. verification;
 6. change impact;
-7. baselines.
+7. baselines;
+8. engineering-intelligence overview;
+9. intelligence impact;
+10. deterministic trace queries;
+11. evidence validity;
+12. intelligence elicitation.
 
 The automated gate fails on critical or serious axe violations in those surfaces.
 
@@ -37,7 +45,7 @@ Run:
 npm run test:accessibility
 ```
 
-The full end-to-end suite also exercises keyboard-operable controls, accessible labels, dialogs, tables, graph alternatives, and theme persistence.
+The full end-to-end suite also exercises keyboard-operable controls, accessible labels, dialogs, tables, graph alternatives, the Thread intelligence write-back path, and theme persistence.
 
 ## Limitations
 

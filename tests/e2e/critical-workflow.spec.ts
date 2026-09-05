@@ -69,7 +69,9 @@ test(
       page.getByText("A named, approval-recorded snapshot"),
     ).toBeVisible();
     await page.getByRole("button", { name: "Close help and glossary" }).click();
-    await page.getByRole("button", { name: "Engineering" }).click();
+    await page
+      .getByRole("button", { name: "Engineering", exact: true })
+      .click();
     await expect(
       page.getByText(/Engineering mode · dense model controls/),
     ).toBeVisible();
