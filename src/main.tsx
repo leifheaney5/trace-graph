@@ -5,6 +5,7 @@ import "./case-study-chrome.css";
 import "./digital-thread-workbench.css";
 import "./workstation-ui.css";
 import "./workstation-detail.css";
+import "./workstation-a11y.css";
 import App from "./App.tsx";
 import CaseStudyChrome from "./CaseStudyChrome.tsx";
 import DigitalThreadWorkbench from "./DigitalThreadWorkbench.tsx";
