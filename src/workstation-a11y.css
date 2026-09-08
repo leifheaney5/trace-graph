@@ -1,4 +1,12 @@
-/* High-contrast refinements for small workstation labels. */
+/* High-contrast refinements and compatibility aliases for the workstation theme. */
+
+:root {
+  /* Legacy inline styles in the core app still reference these tokens. Keep
+     them mapped to the workstation palette so dialogs and recovery states do
+     not fall back to the browser's default black text on dark surfaces. */
+  --text-secondary: #a7b0b3;
+  --accent-color: #8eb7a8;
+}
 
 .workflow-rail__label {
   color: #879297;
