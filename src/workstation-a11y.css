@@ -23,3 +23,9 @@
 .nav-item small {
   color: #768086;
 }
+
+/* Inactive intelligence tabs remain visually secondary while clearing the
+   4.5:1 AA threshold against the raised workstation panel. */
+.dt-tabs button {
+  color: #818c91;
+}
