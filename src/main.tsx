@@ -8,6 +8,7 @@ import "./case-study-chrome.css";
 import "./digital-thread-workbench.css";
 import "./workstation-ui.css";
 import "./workstation-detail.css";
+import "./workstation-polish.css";
 import "./workstation-a11y.css";
 
 export function TraceGraphRoot() {
