@@ -1,0 +1,13 @@
+/* High-contrast refinements for small workstation labels. */
+
+.workflow-rail__label {
+  color: #879297;
+}
+
+.workflow-rail__index {
+  color: #808b90;
+}
+
+.case-study-chrome__scope {
+  color: #818c91;
+}
