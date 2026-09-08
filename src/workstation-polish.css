@@ -1,0 +1,36 @@
+/* Final visual consistency pass for legacy utility surfaces. */
+
+.export-strip {
+  border: 1px solid var(--tg-line);
+  border-radius: 0;
+  background: #0d1113;
+  box-shadow: none;
+}
+
+.export-strip span {
+  color: #9ca6aa;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 8px;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+}
+
+.export-strip .text-button {
+  color: var(--tg-signal);
+}
+
+.export-strip input,
+.export-strip select {
+  border-color: var(--tg-line-strong);
+  background: #090c0e;
+}
+
+input[type="checkbox"],
+input[type="radio"],
+input[type="range"] {
+  accent-color: var(--tg-signal);
+}
+
+input[type="range"] {
+  filter: saturate(0.55);
+}
