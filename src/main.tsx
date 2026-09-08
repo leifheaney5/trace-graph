@@ -1,11 +1,15 @@
 import { StrictMode, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
-import "./index.css";
-import "./case-study-chrome.css";
-import "./digital-thread-workbench.css";
 import App from "./App.tsx";
 import CaseStudyChrome from "./CaseStudyChrome.tsx";
 import DigitalThreadWorkbench from "./DigitalThreadWorkbench.tsx";
+import "./index.css";
+import "./case-study-chrome.css";
+import "./digital-thread-workbench.css";
+import "./workstation-ui.css";
+import "./workstation-detail.css";
+import "./workstation-polish.css";
+import "./workstation-a11y.css";
 
 export function TraceGraphRoot() {
   const [coreRevision, setCoreRevision] = useState(0);
