@@ -101,7 +101,8 @@ body {
 .dt-kicker,
 .dt-suggestion-label {
   color: var(--tg-muted);
-  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  font-family:
+    ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
   font-size: 9px;
   font-weight: 600;
   letter-spacing: 0.12em;
@@ -843,8 +844,7 @@ label,
   padding: 16px;
   background:
     linear-gradient(rgb(255 255 255 / 1%) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(255 255 255 / 1%) 1px, transparent 1px),
-    #0b0e10;
+    linear-gradient(90deg, rgb(255 255 255 / 1%) 1px, transparent 1px), #0b0e10;
   background-size: 32px 32px;
 }
 
