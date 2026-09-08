@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import "./case-study-chrome.css";
 import "./digital-thread-workbench.css";
+import "./workstation-ui.css";
 import App from "./App.tsx";
 import CaseStudyChrome from "./CaseStudyChrome.tsx";
 import DigitalThreadWorkbench from "./DigitalThreadWorkbench.tsx";
